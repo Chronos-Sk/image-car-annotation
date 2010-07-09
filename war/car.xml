@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE wire-frame SYSTEM "wireframe.dtd">
+<wire-frame>
+	<points>
+		<point><x>-0.25</x><y>-0.25</y><z>-0.5</z></point>
+		<point><x> 0.25</x><y>-0.25</y><z>-0.5</z></point>
+		<point><x>-0.25</x><y> 0.25</y><z>-0.5</z></point>
+		<point><x>-0.25</x><y>-0.25</y><z> 0.5</z></point>
+		<point><x> 0.25</x><y> 0.25</y><z>-0.5</z></point>
+		<point><x> 0.25</x><y>-0.25</y><z> 0.5</z></point>
+		<point><x>-0.25</x><y> 0.25</y><z> 0.5</z></point>
+		<point><x> 0.25</x><y> 0.25</y><z> 0.5</z></point>
+	</points>
+	<lines>
+		<line><from>0</from><to>1</to></line>
+		<line><from>0</from><to>2</to></line>
+		<line><from>0</from><to>3</to></line>
+		<line><from>1</from><to>4</to></line>
+		<line><from>1</from><to>5</to></line>
+		<line><from>2</from><to>4</to></line>
+		<line><from>2</from><to>6</to></line>
+		<line><from>3</from><to>5</to></line>
+		<line><from>3</from><to>6</to></line>
+		<line><from>4</from><to>7</to></line>
+		<line><from>5</from><to>7</to></line>
+		<line><from>6</from><to>7</to></line>
+	</lines>
+</wire-frame>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wire-frame SYSTEM "config.dtd">
+<config>
+	<wire-frames>
+		<!-- Relative URI's start from the script directory. -->
+		<wire-frame name="Sedan" default="true">../sedan.obj</wire-frame>
+		<wire-frame name="Hatchback">../hatchback.obj</wire-frame>
+		<wire-frame name="Pickup">../pickup.obj</wire-frame>
+		<wire-frame name="SUV">../suv.obj</wire-frame>
+		<wire-frame name="Van">../van.obj</wire-frame>
+	</wire-frames>
+</config>

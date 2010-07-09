@@ -1,0 +1,5 @@
+<!ELEMENT config (wire-frames)>
+<!ELEMENT wire-frames (wire-frame+)>
+<!ATTLIST wire-frame name (#PCDATA)>
+<!ATTLIST wire-frame default (true,false) "false">
+<!ELEMENT wire-frame (#PCDATA)>

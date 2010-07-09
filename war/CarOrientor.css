@@ -1,0 +1,83 @@
+/** Add css rules here for your application. */
+
+
+/** Example rules used by the template application (remove for your app) */
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: #777777;
+  margin: 40px 0px 70px;
+  text-align: center;
+}
+
+.carOrientor {
+  margin: auto;	
+}
+
+.carOrientor .g2d-Surface {
+  border: thin solid black;
+}
+
+.sliderPanel {
+  float: left;
+  display: inline-block;
+}
+
+.sliderPanel * {
+  margin-right: 1em;
+}
+
+.sliderPanel .gwt-InlineLabel {
+  vertical-align: 7pt; /* Center the text with the range. */
+}
+
+.sliderPanel input[type="range"] {
+  width: 12em;
+}
+
+.resetButton {
+  /* float: right; */
+}
+
+.gwt-SliderBar-shell {
+  border: 2px solid #faf9f7;
+  border-right: 2px solid #848280;
+  border-bottom: 2px solid #848280;
+  background-color: #efebe7;
+  height: 15pt;
+  width: 10em;
+  display: inline-block;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-line {
+  border: 1px solid black;
+  background-color: white;
+  height: 4px;
+  width: 95%;
+  top: 7pt;
+  overflow: hidden;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-knob {
+  top: -1pt;
+  width: 11px;
+  height: 21px;
+  z-index: 1;
+  cursor: pointer;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-tick {
+  top: 2pt;
+  width: 1px;
+  height: 3pt;
+  background: black;
+  overflow: hidden;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-label {
+  top: 2pt;
+  font-size: 8pt;
+  cursor: default;
+}
+.gwt-SliderBar-shell-focused {
+}
+.gwt-SliderBar-shell .gwt-SliderBar-line-sliding {
+  background-color: #DDDDDD;
+  cursor: pointer;
+}

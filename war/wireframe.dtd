@@ -1,0 +1,10 @@
+<!ELEMENT wire-frame (points,lines)>
+<!ELEMENT points (point+)>
+<!ELEMENT point (x,y,z)>
+<!ELEMENT x (#PCDATA)>
+<!ELEMENT y (#PCDATA)>
+<!ELEMENT z (#PCDATA)>
+<!ELEMENT lines (line+)>
+<!ELEMENT line (from,to)>
+<!ELEMENT from (#PCDATA)>
+<!ELEMENT to (#PCDATA)>
