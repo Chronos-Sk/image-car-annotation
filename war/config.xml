@@ -3,10 +3,10 @@
 <config>
 	<wire-frames>
 		<!-- Relative URI's start from the script directory. -->
-		<wire-frame name="Sedan" default="true">../sedan.obj</wire-frame>
-		<wire-frame name="Hatchback">../hatchback.obj</wire-frame>
-		<wire-frame name="Pickup">../pickup.obj</wire-frame>
-		<wire-frame name="SUV">../suv.obj</wire-frame>
-		<wire-frame name="Van">../van.obj</wire-frame>
+		<wire-frame name="Sedan" default="true">../sedan.objm</wire-frame>
+		<wire-frame name="Hatchback">../hatchback.objm</wire-frame>
+		<wire-frame name="Pickup">../pickup.objm</wire-frame>
+		<wire-frame name="SUV">../suv.objm</wire-frame>
+		<wire-frame name="Van">../van.objm</wire-frame>
 	</wire-frames>
 </config>

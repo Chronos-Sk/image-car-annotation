@@ -8,12 +8,12 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 
 /**
- * Class responsible for handling mouse events for a {@link MoveableImageView}.
+ * Class responsible for handling mouse events for a {@link MovableImageView}.
  * Updates the view's translation allowing the image to be dragged around.
  * 
  * The handler updates the translation of the <code>MovableImageView</code> when
  * the user drags the mouse around on it. After each translation update, the
- * handler also calls {@link Drawable.draw() draw()} on the {@link Drawable}.
+ * handler also calls {@link Drawable#draw() draw()} on the {@link Drawable}.
  * 
  * @author Joshua Little
  */
@@ -64,8 +64,8 @@ public class MovableImageMouseHandler
 
 	/**
 	 * Updates the {@link MovableImageView}'s translation. Calls
-	 * {@link MovableImageView.translate(double, double)} with the change in
-	 * mouse position since the last mouse event. Calls {@link Drawable.draw()}
+	 * {@link MovableImageView#translate(double, double)} with the change in
+	 * mouse position since the last mouse event. Calls {@link Drawable#draw()}
 	 * afterwards.
 	 */
 	@Override

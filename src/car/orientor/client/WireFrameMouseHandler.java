@@ -16,7 +16,7 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
  * 
  * The handler updates the x- and y-rotations of the <code>WireFrameView</code>
  * when the user drags the mouse around on it. After each rotation update,
- * the handler also calls {@link Drawable.draw() draw()} on the
+ * the handler also calls {@link Drawable#draw() draw()} on the
  * {@link Drawable}.
  * 
  * @author Joshua
@@ -84,9 +84,9 @@ public class WireFrameMouseHandler implements MouseDownHandler, MouseUpHandler, 
 
 	/**
 	 * Updates the {@link WireFrameView}'s translation. Calls
-	 * {@link MovableImageView.translate(double, double) translate} with the
+	 * {@link MovableImageView#translate(double, double) translate} with the
 	 * change in mouse position since the last mouse event. Calls
-     * {@link Drawable.draw()} afterwards.
+     * {@link Drawable#draw()} afterwards.
 	 */
 	@Override
 	public void onMouseMove(MouseMoveEvent event) {

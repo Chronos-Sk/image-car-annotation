@@ -282,7 +282,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	 * Set the x-rotation to the supplied values. Positive values rotate
 	 * the y-axis towards the z-axis.
 	 * 
-	 * @param dx the new x-rotation value.
+	 * @param rotX the new x-rotation value.
 	 * @see #rotateX(double)
 	 */
 	public void setRotateX(double rotX) {
@@ -294,7 +294,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	 * Set the y-rotation to the supplied values. Positive values rotate
 	 * the z-axis towards the x-axis.
 	 * 
-	 * @param dy the new y-rotation value.
+	 * @param rotY the new y-rotation value.
 	 * @see #rotateY(double)
 	 */
 	public void setRotateY(double rotY) {
@@ -306,7 +306,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	 * Set the z-rotation to the supplied values. Positive values rotate
 	 * the x-axis towards the y-axis.
 	 * 
-	 * @param dz the new z-rotation value.
+	 * @param rotZ the new z-rotation value.
 	 * @see #rotateZ(double)
 	 */
 	public void setRotateZ(double rotZ) {
@@ -319,8 +319,8 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	 * </code> values rotate the y-axis towards the z-axis, and positive
      * <code>dy</code> values rotate the z-axis towards the x-axis.
 	 * 
-	 * @param dx the new x-rotation value.
-	 * @param dy the new y-rotation value.
+	 * @param rotX the new x-rotation value.
+	 * @param rotY the new y-rotation value.
 	 * @see #rotate(double, double)
 	 * @see #setRotateX(double)
 	 * @see #setRotateY(double)
@@ -336,9 +336,9 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
      * <code>dy</code> values rotate the z-axis towards the x-axis, and positive
      * <code>dz</code> values rotate the x-axis towards the y-axis.
 	 * 
-	 * @param dx the new x-rotation value.
-	 * @param dy the new y-rotation value.
-	 * @param dz the new z-rotation value.
+	 * @param rotX the new x-rotation value.
+	 * @param rotY the new y-rotation value.
+	 * @param rotZ the new z-rotation value.
 	 * @see #rotate(double, double, double)
 	 * @see #setRotateX(double)
 	 * @see #setRotateY(double)
@@ -352,7 +352,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	/**
 	 * Draws this <code>ObjWireFrameView</code>'s wire-frame onto the view. Will
 	 * only draw if it has been invalidated, whether be changing its
-	 * wire-frame or rotation, or by calling {@link invalidate()}.
+	 * wire-frame or rotation, or by calling {@link #invalidate()}.
 	 * 
 	 * @see #redraw()
 	 */

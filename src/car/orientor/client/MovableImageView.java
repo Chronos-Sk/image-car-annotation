@@ -201,7 +201,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	
 	/**
 	 * Changes the default zoom to the specified value. This value is used when
-	 * {@link resetZoom()} or {@link reset()} is called.
+	 * {@link #resetZoom()} or {@link #reset()} is called.
 	 * 
 	 * @param z the new default zoom.
 	 * @see #getDefaultZoom()
@@ -212,12 +212,12 @@ public class MovableImageView extends FocusPanel implements Drawable {
 
 	/**
 	 * Returns the current default zoom. This value is used when
-	 * {@link resetZoom()} or {@link reset()} is called.
+	 * {@link #resetZoom()} or {@link #reset()} is called.
 	 * 
 	 * @param z the new default zoom.
 	 * @see #setDefaultZoom(double)
 	 */
-	public double getDefaultZoom(double z) {
+	public double getDefaultZoom() {
 		return defaultZoom;
 	}
 	
@@ -240,7 +240,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	/**
 	 * Sets the absolute zoom applied to the image and rectangle. The supplied
 	 * value is not run through the exponential scale. As a result, calling
-	 * {@link getZoom()} immediately after is guaranteed to return the value
+	 * {@link #getZoom()} immediately after is guaranteed to return the value
 	 * supplied to this function.
 	 * 
 	 * @param newZoom the new absolute zoom to apply.
@@ -338,7 +338,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * it has one. If the rectangle is null, resets offset to zero.
 	 * 
 	 * @see #reset()
-	 * @see #resetScale()
+	 * @see #resetZoom()
 	 */
 	public void resetOffset() {
 		offX = -rect.getX() + -rect.getWidth()/2  + width/2;
@@ -363,7 +363,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	/**
 	 * Draws this <code>MovableImageView</code>'s image and rectangle onto the
 	 * view. Will only draw if it has been invalidated, whether be changing its
-	 * zoom or offset, or by calling {@link invalidate()}.
+	 * zoom or offset, or by calling {@link #invalidate()}.
 	 * 
 	 * @see #redraw()
 	 */

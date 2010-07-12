@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Composite;
  * </code>. In FireFox, however, the slider control has to be emulated using
  * JavaScript and CSS.
  * 
- * Currently, this class simply wraps an instance of {@see SliderImpl} obtained
+ * Currently, this class simply wraps an instance of {@link SliderImpl} obtained
  * via deffered binding.
  * 
  * @author Joshua Little
