@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.client.SliderBar;
 
 /**
- * The {@link SliderImp} implementation used for Mozilla Firefox, since it
+ * The {@link SliderImpl} implementation used for Mozilla Firefox, since it
  * doesn't have a native slider implementation.
  * 
  * This class delegates to GWT Incubator's <code>SliderBar</code> class.
