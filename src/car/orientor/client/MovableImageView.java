@@ -214,7 +214,6 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * Returns the current default zoom. This value is used when
 	 * {@link #resetZoom()} or {@link #reset()} is called.
 	 * 
-	 * @param z the new default zoom.
 	 * @see #setDefaultZoom(double)
 	 */
 	public double getDefaultZoom() {

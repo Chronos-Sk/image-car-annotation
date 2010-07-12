@@ -31,7 +31,7 @@ public class MovableImageMouseHandler
 	 * Creates a new instance of <code>MovableImageMouseHandler</code> with the
 	 * specified {@link Drawable} and {@link MovableImageView}.
 	 * 
-	 * @param drawer the Drawable to call {@link Drawable.draw() draw()} on.
+	 * @param drawer the Drawable to call {@link Drawable#draw() draw()} on.
 	 * @param view
 	 */
 	public MovableImageMouseHandler(Drawable drawer, MovableImageView view) {

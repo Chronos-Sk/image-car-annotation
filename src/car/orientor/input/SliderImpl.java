@@ -41,7 +41,7 @@ public interface SliderImpl {
 	 * Sets the maximum value for the supplied {@link Slider}
 	 * 
 	 * @param slider the <code>Slider</code> to change.
-	 * @param min the new maximum value.
+	 * @param max the new maximum value.
 	 */
 	void setMaximum(Widget slider, double max);
 
@@ -57,7 +57,7 @@ public interface SliderImpl {
 	 * Sets the value for the supplied {@link Slider}
 	 * 
 	 * @param slider the <code>Slider</code> to change.
-	 * @param min the new value.
+	 * @param value the new value.
 	 */
 	void setValue(Widget slider, double value);
 
@@ -73,7 +73,7 @@ public interface SliderImpl {
 	 * Sets the step value for the supplied {@link Slider}
 	 * 
 	 * @param slider the <code>Slider</code> to change.
-	 * @param min the new step value.
+	 * @param step the new step value.
 	 */
 	void setStep(Widget slider, double step);
 

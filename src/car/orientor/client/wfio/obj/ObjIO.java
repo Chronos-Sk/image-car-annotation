@@ -191,7 +191,7 @@ public abstract class ObjIO {
 	/**
 	 * Parse a point in a {@link Face} definition
 	 * 
-	 * @param tokens the token defining the point in the <code>Face</code>
+	 * @param token the token defining the point in the <code>Face</code>
 	 * @return the index of the vertex for that point.
 	 */
 	private static int parseFacePoint(String token) {

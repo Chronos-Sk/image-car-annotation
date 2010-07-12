@@ -53,7 +53,7 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>{
 	/**
 	 * Sets the maximum value the <code>Slider</code> will take.
 	 * 
-	 * @param min the new maximum value.
+	 * @param max the new maximum value.
 	 */
 	public void setMaximum(double max) {
 		impl.setMaximum(getWidget(), max);
@@ -71,7 +71,7 @@ public class Slider extends Composite implements HasValueChangeHandlers<Double>{
 	/**
 	 * Changes the value of this <code>Slider</code> to the supplied value.
 	 * 
-	 * @param the new value.
+	 * @param value the new value.
 	 */
 	public void setValue(double value) {
 		impl.setValue(getWidget(), value);

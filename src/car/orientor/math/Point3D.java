@@ -136,7 +136,7 @@ public class Point3D implements Cloneable {
 	 * 
 	 * @param point the <code>Point3D</code> to multiply.
 	 * @param mat the <code>Matrix3D</code> to multiply by.
-	 * @return
+	 * @return the product.
 	 */
 	public static Point3D multiply(Point3D point, Matrix3D mat) {
 		Point3D clone = point.clone();
@@ -146,7 +146,7 @@ public class Point3D implements Cloneable {
 
 	/**
 	 * Computes a hash-code of this <code>Point3D</code> which fufills the
-	 * contract with this object's {@see #equals(Object)} method.
+	 * contract with this object's {@link #equals(Object)} method.
 	 * 
 	 * @return the hash-code.
 	 */
