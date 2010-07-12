@@ -73,7 +73,8 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	/**
 	 * Sets the URL used to load the image to annotate. Must be set before
 	 * onLoad() is called.
-	 * @param imageURL
+	 * 
+	 * @param imageURL the new image URL.
 	 */
 	public void setImageURL(String imageURL) {
 		this.imageURL = imageURL;
@@ -82,7 +83,8 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	/**
 	 * Sets the URL used to load the rectangle around the car to annotate. Must
 	 * be set before onLoad() is called.
-	 * @param imageURL
+	 * 
+	 * @param carRect the new rectangle.
 	 */
 	public void setCarRectangle(Rectangle carRect) {
 		this.carRect = carRect;

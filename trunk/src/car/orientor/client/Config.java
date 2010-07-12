@@ -247,7 +247,7 @@ public class Config implements HasValueChangeHandlers<Boolean> {
 	 * configuration info.
 	 * 
 	 * @param content the XML file's content to parse.
-	 * @DOMParseException if the content does not represent a parsable XML file.
+	 * @throws DOMParseException if the content does not represent a parsable XML file.
 	 */
 	private void parseConfig(String content) {
 		xmlDoc = XMLParser.parse(content);
