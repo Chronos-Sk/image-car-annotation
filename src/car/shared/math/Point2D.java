@@ -1,4 +1,4 @@
-package car.orientor.math;
+package car.shared.math;
 
 /**
  * A point with two coordinates, <code>x</code> and <code>y</code>, that allows

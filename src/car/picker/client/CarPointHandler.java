@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import car.shared.math.Point2D;
+
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -412,7 +414,7 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	public void onMouseMove(MouseMoveEvent event) {
 		if ( isDragging() ) {
 			Point2D mousePoint = getMousePoint(event); // Get relative location.
-			focused.setPosition(mousePoint); // Update the focused car's loc.
+			focused.setPoint(mousePoint); // Update the focused car's loc.
 			draw();
 		}
 	}

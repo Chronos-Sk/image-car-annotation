@@ -12,9 +12,10 @@
 
   <!-- Other module inherits                                      -->
 
-  <inherits
-  	name="gwt.g2d.g2d">
-</inherits>
+  <inherits name="gwt.g2d.g2d"/>
+  
+  <inherits name="car.shared.Shared"/>
+  
 	<!-- Specify the app entry point class.                         --><entry-point class='car.picker.client.CarPicker'></entry-point>
 
   <!-- Specify the paths for translatable code                    -->

@@ -6,7 +6,7 @@ import java.io.PrintStream;
 
 import car.orientor.client.wfio.obj.Face;
 import car.orientor.client.wfio.obj.ObjWireFrame;
-import car.orientor.math.Point3D;
+import car.shared.math.Point3D;
 
 /**
  * This class supplies methods that can write

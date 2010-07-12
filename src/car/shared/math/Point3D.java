@@ -1,4 +1,4 @@
-package car.orientor.math;
+package car.shared.math;
 
 /**
  * A point with three coordinates, <code>x</code>, <code>y</code>, and <code>z

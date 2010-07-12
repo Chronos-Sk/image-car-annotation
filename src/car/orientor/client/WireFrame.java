@@ -1,6 +1,6 @@
 package car.orientor.client;
 
-import car.orientor.math.Point3D;
+import car.shared.math.Point3D;
 
 @Deprecated
 public class WireFrame {

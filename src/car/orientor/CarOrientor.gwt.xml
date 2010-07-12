@@ -15,14 +15,14 @@
 	<inherits name="com.google.gwt.xml.XML" />
 	<inherits name='com.google.gwt.widgetideas.WidgetIdeas' />   
     <inherits name='com.google.gwt.libideas.LibIdeas' />
+    
+    <inherits name="car.shared.Shared"/>
    
 	<!-- Specify the app entry point class.                         -->
 	<entry-point class='car.orientor.client.CarOrientor'></entry-point>
 
 	<!-- Specify the paths for translatable code                    -->
 	<source path='client' />
-	<source path="wfio" />
-	<source path="math" />
 	<source path="wfio" />
 	<source path="wfio.obj" />
 	<source path="input" />

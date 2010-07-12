@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import com.google.gwt.core.client.GWT;
 
-import car.orientor.math.Point3D;
+import car.shared.math.Point3D;
 
 /**
  * Class representing a 3D wire-frame, generally defined by an .obj file.

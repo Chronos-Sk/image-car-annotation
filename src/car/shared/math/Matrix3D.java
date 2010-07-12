@@ -1,4 +1,4 @@
-package car.orientor.math;
+package car.shared.math;
 
 /**
  * A 3x3 matrix that allows direct access to its components.
