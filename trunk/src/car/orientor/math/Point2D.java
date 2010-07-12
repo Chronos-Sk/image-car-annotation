@@ -44,7 +44,7 @@ public class Point2D implements Cloneable {
 	 * 
 	 * @param x the new x-coordinate.
 	 * @param y the new y-coordinate.
-	 * @see #setPoint(Point3D)
+	 * @see #setPoint(Point2D)
 	 */
 	public void setPoint(double x, double y) {
 		this.x = x;
@@ -73,7 +73,7 @@ public class Point2D implements Cloneable {
 	
 	/**
 	 * Computes a hash-code of this <code>Point2D</code> which fufills the
-	 * contract with this object's {@see #equals(Object)} method.
+	 * contract with this object's {@link #equals(Object)} method.
 	 * 
 	 * @return the hash-code.
 	 */
