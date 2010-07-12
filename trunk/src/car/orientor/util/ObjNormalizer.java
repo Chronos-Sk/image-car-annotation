@@ -9,7 +9,7 @@ import java.io.OutputStream;
 
 import car.orientor.client.wfio.obj.ObjIO;
 import car.orientor.client.wfio.obj.ObjWireFrame;
-import car.orientor.math.Point3D;
+import car.shared.math.Point3D;
 
 /**
  * This class can be run to normal a .obj file into the coordinate system that

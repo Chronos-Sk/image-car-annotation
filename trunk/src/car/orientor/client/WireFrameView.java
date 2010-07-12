@@ -9,8 +9,8 @@ import gwt.g2d.client.math.MathHelper;
 import gwt.g2d.client.math.Matrix;
 import gwt.g2d.client.math.Vector2;
 
-import car.orientor.math.Matrix3D;
-import car.orientor.math.Point3D;
+import car.shared.math.Matrix3D;
+import car.shared.math.Point3D;
 
 import com.google.gwt.user.client.ui.FocusPanel;
 

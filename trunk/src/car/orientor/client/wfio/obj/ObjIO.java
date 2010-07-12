@@ -2,7 +2,7 @@ package car.orientor.client.wfio.obj;
 
 import java.util.ArrayList;
 
-import car.orientor.math.Point3D;
+import car.shared.math.Point3D;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;

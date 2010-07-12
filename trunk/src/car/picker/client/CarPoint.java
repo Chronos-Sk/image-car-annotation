@@ -2,6 +2,7 @@ package car.picker.client;
 
 import gwt.g2d.client.graphics.Color;
 import gwt.g2d.client.graphics.Surface;
+import car.shared.math.Point2D;
 
 /**
  * A point representing a car in an image. Contains location and size
