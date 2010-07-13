@@ -2,7 +2,7 @@
 
 
 /** Example rules used by the template application (remove for your app) */
-h1 {
+h1#project-name {
   font-size: 2em;
   font-weight: bold;
   color: #777777;
@@ -18,13 +18,27 @@ h1 {
   border: thin solid black;
 }
 
+#carorientor-nocar-panel {
+  display: inline;
+  margin: 0em 0.5em 0em 0.25em;
+}
+
+#carorientor-nocar-panel * {
+  display: inline;
+}
+
+#carorientor-nocar-panel .gwt-Label {
+  vertical-align: 2pt;
+  margin-right: 0.25em;
+}
+
 .sliderPanel {
   float: left;
   display: inline-block;
 }
 
 .sliderPanel * {
-  margin-right: 1em;
+  margin-right: 0.75em;
 }
 
 .sliderPanel .gwt-InlineLabel {

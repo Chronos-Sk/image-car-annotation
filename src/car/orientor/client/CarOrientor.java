@@ -10,6 +10,7 @@ import car.orientor.views.MovableImageView;
 import car.orientor.views.ObjWireFrameView;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
@@ -23,16 +24,19 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SubmitButton;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
@@ -55,8 +59,8 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	private Image image; // Image to annotate.
 	private Rectangle carRect; // Rectangle around car to annotate.
 	
-	private int viewWidth = 300; // Width for each view.
-	private int viewHeight = 300; // Height for each view.
+	private int viewWidth = 330; // Width for each view.
+	private int viewHeight = 330; // Height for each view.
 	private int sepWidth = 10; // Width for separator inbetween views.
 
 	private Panel container; // Main container for this frame.
@@ -77,6 +81,10 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	private Slider rollSlider;
 	private Button resetButton;
 	private ListBox carSelectBox;
+	
+	// No car here?
+	private CheckBox noCarBox;
+	private FlowPanel noCar;
 	
 	// Submit form.
 	private FormPanel form;
@@ -188,6 +196,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		container.add(movableImageView);
 		container.add(sliderPanel);
 		container.add(carSelectBox);
+		container.add(noCar);
 		container.add(resetButton);
 		
 		if ( config.hasForm() ) {
@@ -324,6 +333,18 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		
 		// Set which name was already picked.
 		setSelectedCarName(config.getDefaultWireFrameName());
+		
+		noCarBox = new CheckBox();
+		
+		noCar = new FlowPanel();
+		//noCar.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+		
+		Element noCarElement = noCar.getElement();
+		noCarElement.setId("carorientor-nocar-panel");
+		noCarElement.getStyle().setDisplay(Display.INLINE);
+
+		noCar.add(new Label("No car:"));
+		noCar.add(noCarBox);
 	}
 	
 	/**
@@ -334,15 +355,21 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		form.setAction(config.getFormAction());
 		form.setMethod(config.getFormMethod());
 		
-		Style formStyle = form.getElement().getStyle();
+		// Set id.
+		Element formElement = form.getElement();
+		formElement.setId("carorientor-form");
+		
+		// Make the submit button appear correctly.
+		Style formStyle = formElement.getStyle();
 		formStyle.setDisplay(Display.INLINE_BLOCK);
 		formStyle.setPaddingLeft(0.5, Unit.EM);
 		
 		formContainer = new FlowPanel();
-		formContainer.add(new SubmitButton("Submit!"));
+		formContainer.add(new SubmitButton("Submit"));
 		
 		form.add(formContainer);
 		
+		// Adds hidden tags with data before the form is actually submitted.
 		form.addSubmitHandler(new SubmitHandler() {
 			@Override
 			public void onSubmit(SubmitEvent event) {
@@ -357,14 +384,27 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	 * attached form can be assumed to be non-<code>null</code> and initialized.
 	 */
 	private void generateFormData() {
-		formContainer.add(new Hidden("rotX", "" + wireFrameView.getRotateX()));
-		formContainer.add(new Hidden("rotY", "" + wireFrameView.getRotateY()));
-		formContainer.add(new Hidden("rotZ", "" + wireFrameView.getRotateZ()));
-		
-		formContainer.add(new Hidden("offX",""+ movableImageView.getXOffset()));
-		formContainer.add(new Hidden("offY",""+ movableImageView.getYOffset()));
-		
-		formContainer.add(new Hidden("scale", "" + movableImageView.getZoom()));
+		// Is there a car?
+		if ( noCarBox.getValue() ) {
+			formContainer.add(new Hidden("car", "false"));
+		} else {
+			formContainer.add(new Hidden("car", "true"));
+			
+			formContainer.add(
+					new Hidden("rotX", "" + wireFrameView.getRotateX()));
+			formContainer.add(
+					new Hidden("rotY", "" + wireFrameView.getRotateY()));
+			formContainer.add(
+					new Hidden("rotZ", "" + wireFrameView.getRotateZ()));
+			
+			formContainer.add(
+					new Hidden("offX", "" + movableImageView.getXOffset()));
+			formContainer.add(
+					new Hidden("offY", "" + movableImageView.getYOffset()));
+			
+			formContainer.add(
+					new Hidden("scale", "" + movableImageView.getZoom()));
+		}
 	}
 	
 	/**

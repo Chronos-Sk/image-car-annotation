@@ -4,6 +4,7 @@ import gwt.g2d.client.graphics.Surface;
 import car.shared.config.Config;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
@@ -292,16 +293,22 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 		form = new FormPanel(config.getFormTarget());
 		form.setAction(config.getFormAction());
 		form.setMethod(config.getFormMethod());
-		
-		Style formStyle = form.getElement().getStyle();
+
+		// Set id.
+		Element formElement = form.getElement();
+		formElement.setId("carpicker-form");
+
+		// Make the submit button appear correctly.
+		Style formStyle = formElement.getStyle();
 		formStyle.setDisplay(Display.INLINE_BLOCK);
 		formStyle.setPaddingLeft(0.5, Unit.EM);
 		
 		formContainer = new FlowPanel();
-		formContainer.add(new SubmitButton("Submit!"));
+		formContainer.add(new SubmitButton("Submit"));
 		
 		form.add(formContainer);
-		
+
+		// Adds hidden tags with data before the form is actually submitted.
 		form.addSubmitHandler(new SubmitHandler() {
 			@Override
 			public void onSubmit(SubmitEvent event) {
