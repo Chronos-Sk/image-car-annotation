@@ -1,6 +1,7 @@
 package car.picker.client;
 
 import gwt.g2d.client.graphics.Surface;
+import car.shared.config.Config;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style;
@@ -12,15 +13,22 @@ import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SubmitButton;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
 /**
  * Entry point and enclosing <code>Widget</code> for the Car Picker project.
@@ -37,6 +45,8 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	private String SMALL_LABEL = "Small";
 	private String MEDIUM_LABEL = "Medium";
 	private String LARGE_LABEL = "Large";
+	
+	private Config config; // Stores form configuration.
 	
 	// Handles the drawing and manipulating of CarPoints.
 	private CarPointHandler carPointHandler;
@@ -56,17 +66,26 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	private RadioButton smallButton;
 	private RadioButton mediumButton;
 	private RadioButton largeButton;
+	
+	// Submit form.
+	private FormPanel form;
+	private Panel formContainer;
 
 	/**
-	 * This is the entry point method. Called after JavaScript is loaded and
-	 * environment is set up.
+	 * Gets the configuration name defined in the global JavaScript variable
+	 * "carpicker_config", or <code>null</code> if the variable evaluates to
+	 * <code>false</code>.
+	 * 
+	 * @return the supplied configuration file name, or <code>null</code>.
 	 */
-	public void onModuleLoad() {
-		setImageURL(Window.Location.getParameter(IMAGE_PARAM));
-		getElement().setClassName("carPicker");
-		RootPanel.get(CONTAINER_NAME).add(this);
-	}
-
+	public native String getConfigName() /*-{
+		if ( $wnd.carpicker_config ) {
+			return $wnd.carpicker_config;
+		} else {
+			return null;
+		}
+	}-*/;
+	
 	/**
 	 * Sets the URL used to load the image to annotate. Must be set before
 	 * onLoad() is called.
@@ -78,11 +97,70 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	}
 
 	/**
+	 * This is the entry point method. Called after JavaScript is loaded and
+	 * environment is set up.
+	 */
+	public void onModuleLoad() {
+		setImageURL(Window.Location.getParameter(IMAGE_PARAM));
+		
+		String configName = getConfigName();
+		
+		if ( configName == null ) {
+			config = Config.get(); // Load and grab default config.
+		} else {
+			config = new Config(configName);
+		}
+		
+		// Wait for Config to finish loading everything (i.e. wire-frames).
+		if ( !config.isLoaded() ) {
+			// Whill fire a ValueChangeEvent with value <code>true</code> when
+			// finished. JavaScript is single-threaded (and event driven), so
+			// this code doesn't produce a race condition.
+			config.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+				@Override
+				public void onValueChange(ValueChangeEvent<Boolean> event) {
+					configLoaded();
+				}
+			});
+		} else {
+			configLoaded();
+		}
+	}
+
+	/**
+	 * Adds this widget to the HTML document. The widget goes inside of the div
+	 * with id equal to <code>CONTAINER_NAME</code>. If this class was the
+	 * page's entry point, this function will be called automatically once the
+	 * configuration file is finished loading.
+	 */
+	public void configLoaded() {
+		getElement().setClassName("carPicker");
+		RootPanel.get(CONTAINER_NAME).add(this);
+	}
+	
+	/**
 	 * Called when the widget is fully integrated into the DOM tree. Responsible
 	 * for building the internal HTML and setting up appropriate handlers. If
 	 * this function returns normally, the widget should be fully initialized.
 	 */
 	public void onLoad() {
+		buildView();
+		buildControls();
+		
+		// Fill main panel.
+		container = new FlowPanel();
+		container.add(image);
+		container.add(canvas);
+		container.add(controlPanel);
+
+		setWidget(container); // Connects the main container to this widget.
+	}
+
+	/**
+	 * Builds the view and image, and sets their default parameters. Does not
+	 * add them to the DOM.
+	 */
+	private void buildView() {
 		image = new Image(imageURL); // Prep the image for loading.
 		
 		// We're adding it to the DOM to make sure the the browser loads the
@@ -114,7 +192,13 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 				carPointHandler.draw();
 			}
 		});
-		
+	}
+
+	/**
+	 * Builds the all of the controls and sets the default parameters. Does not
+	 * add them to the DOM.
+	 */
+	private void buildControls() {
 		// Button removes focused car.
 		removeButton = new Button("Remove", new ClickHandler() {
 			@Override
@@ -194,13 +278,47 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 		controlPanel.add(smallButton);
 		controlPanel.add(mediumButton);
 		controlPanel.add(largeButton);
-
-		// Fill main panel.
-		container = new FlowPanel();
-		container.add(image);
-		container.add(canvas);
-		container.add(controlPanel);
 		
-		setWidget(container); // Connects the main container to this widget.
+		if ( config.hasForm() ) {
+			buildForm();
+			controlPanel.add(form);
+		}
+	}
+
+	/**
+	 * Builds the form and form container. Does not add it to the DOM.
+	 */
+	private void buildForm() {
+		form = new FormPanel(config.getFormTarget());
+		form.setAction(config.getFormAction());
+		form.setMethod(config.getFormMethod());
+		
+		Style formStyle = form.getElement().getStyle();
+		formStyle.setDisplay(Display.INLINE_BLOCK);
+		formStyle.setPaddingLeft(0.5, Unit.EM);
+		
+		formContainer = new FlowPanel();
+		formContainer.add(new SubmitButton("Submit!"));
+		
+		form.add(formContainer);
+		
+		form.addSubmitHandler(new SubmitHandler() {
+			@Override
+			public void onSubmit(SubmitEvent event) {
+				generateFormData();
+			}
+		});
+	}
+
+	/**
+	 * Converts the list of {@link CarPoint}s in the {@link CarPointHandler} and
+	 * adds them to the attached form. Called when the attached form is being
+	 * submitted. The attached form can be assumed to be non-<code>null</code>
+	 * and initialized.
+	 */
+	private void generateFormData() {
+		for ( CarPoint carPoint : carPointHandler.getCars() ) {
+			formContainer.add(new Hidden("car", "" + carPoint.toDataString()));
+		}
 	}
 }

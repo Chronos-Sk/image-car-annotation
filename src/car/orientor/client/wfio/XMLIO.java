@@ -1,6 +1,6 @@
 package car.orientor.client.wfio;
 
-import car.orientor.client.WireFrame;
+import car.orientor.views.WireFrame;
 import car.shared.math.Point3D;
 
 import com.google.gwt.http.client.Request;

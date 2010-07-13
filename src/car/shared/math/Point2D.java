@@ -90,15 +90,15 @@ public class Point2D implements Cloneable {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if ( this == obj ) {
 			return true;
 		}
 		
-		if (obj == null) {
+		if ( obj == null ) {
 			return false;
 		}
 		
-		if (getClass() != obj.getClass()) {
+		if ( getClass() != obj.getClass() ) {
 			return false;
 		}
 		
@@ -114,7 +114,17 @@ public class Point2D implements Cloneable {
 	 * @return the <code>String</code> representation.
 	 */
 	public String toString() {
-		return "(" + x + ", " + y + ")";
+		return toDataString();
+	}
+	
+	/**
+	 * Returns a compact <code>String</code> representation of this <code>
+	 * Point2D</code> that's not too difficult to parse.
+	 * 
+	 * @return the compact representation.
+	 */
+	public String toDataString() {
+		return "(" + x + "," + y + ")";
 	}
 
 	/**

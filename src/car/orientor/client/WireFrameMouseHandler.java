@@ -3,6 +3,10 @@
  */
 package car.orientor.client;
 
+import car.orientor.views.Drawable;
+import car.orientor.views.MovableImageView;
+import car.orientor.views.ObjWireFrameView;
+
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -11,17 +15,19 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 
 /**
- * Class responsible for handling mouse events for a {@link WireFrameView}.
+ * Class responsible for handling mouse events for a {@link ObjWireFrameView}.
  * Updates the view's rotation allowing the image to be spun around.
  * 
- * The handler updates the x- and y-rotations of the <code>WireFrameView</code>
- * when the user drags the mouse around on it. After each rotation update,
- * the handler also calls {@link Drawable#draw() draw()} on the
+ * The handler updates the x- and y-rotations of the <code>ObjWireFrameView
+ * </code> when the user drags the mouse around on it. After each rotation
+ * update, the handler also calls {@link Drawable#draw() draw()} on the
  * {@link Drawable}.
  * 
  * @author Joshua
  */
-public class WireFrameMouseHandler implements MouseDownHandler, MouseUpHandler, MouseMoveHandler {
+public class WireFrameMouseHandler implements MouseDownHandler, MouseUpHandler,
+											  MouseMoveHandler {
+	
 	public static final double DEFAULT_DRAGGING_SPEED = 0.01;
 	
 	private ObjWireFrameView view; // View this handler is responsible for.
@@ -83,9 +89,9 @@ public class WireFrameMouseHandler implements MouseDownHandler, MouseUpHandler, 
 	}
 
 	/**
-	 * Updates the {@link WireFrameView}'s translation. Calls
-	 * {@link MovableImageView#translate(double, double) translate} with the
-	 * change in mouse position since the last mouse event. Calls
+	 * Updates the {@link ObjWireFrameView}'s translation. Calls 
+	 * {@link MovableImageView#translate(double, double) translate} with
+	 * the change in mouse position since the last mouse event. Calls
      * {@link Drawable#draw()} afterwards.
 	 */
 	@Override

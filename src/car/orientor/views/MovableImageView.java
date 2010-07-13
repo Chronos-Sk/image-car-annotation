@@ -1,4 +1,4 @@
-package car.orientor.client;
+package car.orientor.views;
 
 import gwt.g2d.client.graphics.Color;
 import gwt.g2d.client.graphics.Surface;
