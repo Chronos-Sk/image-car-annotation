@@ -12,10 +12,12 @@
 
   <!-- Other module inherits                                      -->
 
+  <inherits name="com.google.gwt.xml.XML" />
   <!-- <inherits name="gwt.g2d.g2d" /> -->
   
   <!-- Specify the app entry point class.                         -->
   <!-- Specify the paths for translatable code                    -->
   <source path='math'/>
+  <source path='config'/>
 
 </module>

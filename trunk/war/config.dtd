@@ -1,5 +1,8 @@
-<!ELEMENT config (wire-frames)>
+<!ELEMENT config (wire-frames?,form?)>
 <!ELEMENT wire-frames (wire-frame+)>
 <!ATTLIST wire-frame name (#PCDATA)>
 <!ATTLIST wire-frame default (true,false) "false">
 <!ELEMENT wire-frame (#PCDATA)>
+<!ELEMENT form (method?,action?)>
+<!ELEMENT method (#PCDATA)>
+<!ELEMENT action (#PCDATA)>

@@ -1,5 +1,8 @@
 package car.orientor.client;
 
+import car.orientor.views.Drawable;
+import car.orientor.views.MovableImageView;
+
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;

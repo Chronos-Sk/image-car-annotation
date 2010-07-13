@@ -5,6 +5,9 @@ import gwt.g2d.client.graphics.canvas.CanvasElement;
 import gwt.g2d.client.math.Rectangle;
 import car.orientor.client.wfio.obj.ObjWireFrame;
 import car.orientor.input.Slider;
+import car.orientor.views.Drawable;
+import car.orientor.views.MovableImageView;
+import car.orientor.views.ObjWireFrameView;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style;
@@ -22,11 +25,16 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SubmitButton;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
 /**
  * Entry point and enclosing <code>Widget</code> for the Car Orientor project.
@@ -41,7 +49,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	// Assumed total horizontal border width of views.
 	private static final int BORDER_WIDTH = 4;
 	
-	private Config config; // Holds wire-frame information.
+	private OrientorConfig config; // Holds wire-frame information.
 	
 	private String imageURL; // URL to image to annotate.
 	private Image image; // Image to annotate.
@@ -69,6 +77,25 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	private Slider rollSlider;
 	private Button resetButton;
 	private ListBox carSelectBox;
+	
+	// Submit form.
+	private FormPanel form;
+	private Panel formContainer;
+	
+	/**
+	 * Gets the configuration name defined in the global JavaScript variable
+	 * "carorientor_config", or <code>null</code> if the variable evaluates to
+	 * <code>false</code>.
+	 * 
+	 * @return the supplied configuration file name, or <code>null</code>.
+	 */
+	public native String getConfigName() /*-{
+		if ( $wnd.carorientor_config ) {
+			return $wnd.carorientor_config;
+		} else {
+			return null;
+		}
+	}-*/;
 	
 	/**
 	 * Sets the URL used to load the image to annotate. Must be set before
@@ -105,7 +132,13 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 				Integer.valueOf(Window.Location.getParameter("h"))
 				));
 		
-		config = Config.get(); // Load and grab configuration file.
+		String configName = getConfigName();
+		
+		if ( configName == null ) {
+			config = OrientorConfig.get(); // Load and grab default config.
+		} else {
+			config = new OrientorConfig(configName);
+		}
 		
 		// Wait for Config to finish loading everything (i.e. wire-frames).
 		if ( !config.isLoaded() ) {
@@ -115,9 +148,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 			config.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 				@Override
 				public void onValueChange(ValueChangeEvent<Boolean> event) {
-					if ( event.getValue() ) {
-						configLoaded();
-					}
+					configLoaded();
 				}
 			});
 		} else {
@@ -146,6 +177,33 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		Style style = getElement().getStyle();
 		style.setWidth(2 * viewWidth + sepWidth + BORDER_WIDTH, Unit.PX);
 		
+		buildWireFrameView();
+		buildImageView();
+		buildControls();
+		
+		// Fill up the main container.
+		container = new FlowPanel();
+		container.add(image);
+		container.add(wireFrameView);
+		container.add(movableImageView);
+		container.add(sliderPanel);
+		container.add(carSelectBox);
+		container.add(resetButton);
+		
+		if ( config.hasForm() ) {
+			buildForm();
+			container.add(form);
+		}
+		
+		setWidget(container);
+		draw();
+	}
+
+	/**
+	 * Builds the {@link car.orientor.wfio.obj.ObjWireFrameView} and sets the
+	 * default parameters. Does not add it to the DOM.
+	 */
+	private void buildWireFrameView() {
 		// Load default car wire-frame and set up wire-frame view.
 		ObjWireFrame carFrame = config.getDefaultWireFrame(); 
 		wireFrameView = new ObjWireFrameView(carFrame, viewWidth, viewHeight);
@@ -158,7 +216,13 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		
 		// Handles rotating the wire-frame..
 		wfmh = new WireFrameMouseHandler(this, wireFrameView);
+	}
 
+	/**
+	 * Builds the {@link MovableImageView} and sets the default parameters. Does
+	 * not add it to the DOM.
+	 */
+	private void buildImageView() {
 		// Initialize the image view with a <code>null</code> image.
 		movableImageView = new MovableImageView(image, carRect, viewWidth, viewHeight);
 		movableImageView.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
@@ -180,7 +244,13 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		
 		// Handles translating the image.
 		mimh = new MovableImageMouseHandler(CarOrientor.this, movableImageView);
-		
+	}
+
+	/**
+	 * Builds the all of the controls and sets the default parameters. Does not
+	 * add them to the DOM.
+	 */
+	private void buildControls() {
 		// Resets rotation, translation, zoom, and selected car.
 		resetButton = new Button("Reset", new ClickHandler() {
 			@Override
@@ -254,18 +324,47 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		
 		// Set which name was already picked.
 		setSelectedCarName(config.getDefaultWireFrameName());
+	}
+	
+	/**
+	 * Builds the form and form container. Does not add it to the DOM.
+	 */
+	private void buildForm() {
+		form = new FormPanel(config.getFormTarget());
+		form.setAction(config.getFormAction());
+		form.setMethod(config.getFormMethod());
 		
-		// Fill up the main container.
-		container = new FlowPanel();
-		container.add(image);
-		container.add(wireFrameView);
-		container.add(movableImageView);
-		container.add(sliderPanel);
-		container.add(carSelectBox);
-		container.add(resetButton);
+		Style formStyle = form.getElement().getStyle();
+		formStyle.setDisplay(Display.INLINE_BLOCK);
+		formStyle.setPaddingLeft(0.5, Unit.EM);
 		
-		setWidget(container);
-		draw();
+		formContainer = new FlowPanel();
+		formContainer.add(new SubmitButton("Submit!"));
+		
+		form.add(formContainer);
+		
+		form.addSubmitHandler(new SubmitHandler() {
+			@Override
+			public void onSubmit(SubmitEvent event) {
+				generateFormData();
+			}
+		});
+	}
+	
+	/**
+	 * Converts all of the internal orientation information and adds it to the
+	 * attached form. Called when the attached form is being submitted. The
+	 * attached form can be assumed to be non-<code>null</code> and initialized.
+	 */
+	private void generateFormData() {
+		formContainer.add(new Hidden("rotX", "" + wireFrameView.getRotateX()));
+		formContainer.add(new Hidden("rotY", "" + wireFrameView.getRotateY()));
+		formContainer.add(new Hidden("rotZ", "" + wireFrameView.getRotateZ()));
+		
+		formContainer.add(new Hidden("offX",""+ movableImageView.getXOffset()));
+		formContainer.add(new Hidden("offY",""+ movableImageView.getYOffset()));
+		
+		formContainer.add(new Hidden("scale", "" + movableImageView.getZoom()));
 	}
 	
 	/**

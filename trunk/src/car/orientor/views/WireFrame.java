@@ -1,4 +1,4 @@
-package car.orientor.client;
+package car.orientor.views;
 
 import car.shared.math.Point3D;
 

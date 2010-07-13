@@ -1,4 +1,4 @@
-package car.orientor.client;
+package car.orientor.views;
 
 import gwt.g2d.client.graphics.Color;
 import gwt.g2d.client.graphics.Composition;
@@ -176,7 +176,37 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	public Color getLineColor() {
 		return lineColor;
 	}
-	
+
+	/**
+	 * Returns the current x-rotation of this <code>ObjWireFrameView</code>.
+	 * The returned number will be between 0 and two pi, inclusive.
+	 * 
+	 * @return the current x-rotation.
+	 */
+	public double getRotateX() {
+		return rotX;
+	}
+
+	/**
+	 * Returns the current y-rotation of this <code>ObjWireFrameView</code>.
+	 * The returned number will be between 0 and two pi, inclusive.
+	 * 
+	 * @return the current y-rotation.
+	 */
+	public double getRotateY() {
+		return rotY;
+	}
+
+	/**
+	 * Returns the current z-rotation of this <code>ObjWireFrameView</code>.
+	 * The returned number will be between 0 and two pi, inclusive.
+	 * 
+	 * @return the current z-rotation.
+	 */
+	public double getRotateZ() {
+		return rotZ;
+	}
+
 	/**
 	 * Changes the x-rotation by the supplied amount. Positive values rotate
 	 * the y-axis towards the z-axis.

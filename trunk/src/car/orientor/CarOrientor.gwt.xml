@@ -26,6 +26,7 @@
 	<source path="wfio" />
 	<source path="wfio.obj" />
 	<source path="input" />
+	<source path="views" />
 	
 	<replace-with class="car.orientor.input.SliderImplGeneral">
     	<when-type-is class="car.orientor.input.SliderImpl"/>

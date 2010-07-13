@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wire-frame SYSTEM "config.dtd">
+<config>
+	<form>
+		<method>GET</method>
+		<action>/hallo.html</action>
+		<target>_self</target>
+	</form>
+</config>
