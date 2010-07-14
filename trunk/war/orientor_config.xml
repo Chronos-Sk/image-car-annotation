@@ -4,10 +4,12 @@
 	<wire-frames>
 		<!-- Relative URI's start from the script directory. -->
 		<wire-frame name="Sedan" default="true">../models/sedan.objm</wire-frame>
-		<wire-frame name="Hatchback">../models/hatchback.objm</wire-frame>
+		<!-- <wire-frame name="Hatchback">../models/hatchback.objm</wire-frame> -->
 		<wire-frame name="Pickup">../models/pickup.objm</wire-frame>
 		<wire-frame name="SUV">../models/suv.objm</wire-frame>
 		<wire-frame name="Van">../models/van.objm</wire-frame>
+		<wire-frame name="Minivan">../models/minivan.objm</wire-frame>
+		<wire-frame name="Bus">../models/bus.objm</wire-frame>
 	</wire-frames>
 	<form>
 		<method>GET</method>
