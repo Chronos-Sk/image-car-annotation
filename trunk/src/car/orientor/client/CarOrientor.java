@@ -36,7 +36,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SubmitButton;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
@@ -89,6 +88,42 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	// Submit form.
 	private FormPanel form;
 	private Panel formContainer;
+
+	/**
+	 * Adds a hidden input to the submit form with the specified name and value.
+	 * Does nothing if this <code>CarPicker</code> has no form.
+	 * 
+	 * @param name the name of the new hidden input.
+	 * @param value the value of the new hidden input.
+	 */
+	public void addFormEntry(String name, String value) {
+		if ( form != null ) {
+			formContainer.add(new Hidden(name, value));
+		}
+	}
+	
+	/**
+	 * Exports the functions that should be available to hand-written
+	 * JavaScript. Should be called before {@link #onModuleLoad()} returns.
+	 */
+	private native void exportFunctions() /*-{
+		var _this = this;
+		
+		$wnd.CarOrientor = new Object();
+		$wnd.CarOrientor.addFormEntry = $entry(function(name, value) {
+			_this.@car.orientor.client.CarOrientor::addFormEntry(Ljava/lang/String;Ljava/lang/String;)(name,value);
+		});
+	}-*/;
+
+	/**
+	 * Calls the native JavaScript function <code>$wnd.afterCarPickerLoad()
+	 * </code>, if it exists.
+	 */
+	private native void fireAfterModuleLoad() /*-{
+		if ( $wnd.afterCarPickerLoad ) {
+			$wnd.afterCarPickerLoad();
+		}
+	}-*/;
 	
 	/**
 	 * Gets the configuration name defined in the global JavaScript variable
@@ -131,6 +166,8 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	 * environment is set up.
 	 */
 	public void onModuleLoad() {
+		exportFunctions();
+		
 		setImageURL(Window.Location.getParameter(IMAGE_PARAM));
 		
 		setCarRectangle(new Rectangle(
@@ -206,6 +243,8 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		
 		setWidget(container);
 		draw();
+		
+		fireAfterModuleLoad();
 	}
 
 	/**
@@ -397,10 +436,16 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 			formContainer.add(
 					new Hidden("rotZ", "" + wireFrameView.getRotateZ()));
 			
-			formContainer.add(
-					new Hidden("offX", "" + movableImageView.getXOffset()));
-			formContainer.add(
-					new Hidden("offY", "" + movableImageView.getYOffset()));
+			// offX and offY go to the corner of the view. The model is in the
+			// center of the view.
+			int posX = (int) -movableImageView.getXOffset();
+			posX += movableImageView.getSurface().getWidth() / 2;
+			
+			int posY = (int) -movableImageView.getYOffset();
+			posY += movableImageView.getSurface().getHeight() / 2;
+			
+			formContainer.add(new Hidden("posX", "" + posX));
+			formContainer.add(new Hidden("posY", "" + posY));
 			
 			formContainer.add(
 					new Hidden("scale", "" + movableImageView.getZoom()));

@@ -13,9 +13,19 @@
     <link type="text/css" rel="stylesheet" href="CarPicker.css">
     
     <!-- Script arguments: -->
-	<script>carpicker_config = "../picker_config.xml";</script>
+	<script>
+		carpicker_config = "../picker_config.xml";
+		
+		// Called by CarPicker after it's done loading.
+    	function afterCarPickerLoad() {
+			window.CarPicker.addFormEntry("Hallo", "thar!");
+			window.CarPicker.addFormEntry("Pudding", "cup");
+		}
+	</script>
     
     <script type="text/javascript" language="javascript" src="carpicker/carpicker.nocache.js"></script>
+    <script>
+	</script>
   </head>
 
   <!--                                           -->
