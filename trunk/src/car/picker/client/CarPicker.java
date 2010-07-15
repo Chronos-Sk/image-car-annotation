@@ -342,9 +342,12 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 		Style formStyle = formElement.getStyle();
 		formStyle.setDisplay(Display.INLINE_BLOCK);
 		formStyle.setPaddingLeft(0.5, Unit.EM);
+
+		SubmitButton submit = new SubmitButton("Submit");
+		submit.getElement().setId("carpicker-submit");
 		
 		formContainer = new FlowPanel();
-		formContainer.add(new SubmitButton("Submit"));
+		formContainer.add(submit);
 		
 		form.add(formContainer);
 

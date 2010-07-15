@@ -403,8 +403,11 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		formStyle.setDisplay(Display.INLINE_BLOCK);
 		formStyle.setPaddingLeft(0.5, Unit.EM);
 		
+		SubmitButton submit = new SubmitButton("Submit");
+		submit.getElement().setId("carorientor-submit");
+		
 		formContainer = new FlowPanel();
-		formContainer.add(new SubmitButton("Submit"));
+		formContainer.add(submit);
 		
 		form.add(formContainer);
 		
