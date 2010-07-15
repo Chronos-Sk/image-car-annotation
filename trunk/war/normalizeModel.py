@@ -19,6 +19,7 @@ def readFile(infile):
 			normals.append(line)
 		elif line[0:2] == 'f ':
 			faces.append(line)
+	f.close()
 	return verts, normals, faces
 		
 def normalizeVertices(verts, maxDistance):
