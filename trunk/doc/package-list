@@ -1,1 +1,9 @@
 car.orientor.client
+car.orientor.client.wfio
+car.orientor.client.wfio.obj
+car.orientor.input
+car.orientor.util
+car.orientor.views
+car.picker.client
+car.shared.config
+car.shared.math

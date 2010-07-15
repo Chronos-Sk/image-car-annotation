@@ -111,20 +111,24 @@ public class Point2D implements Cloneable {
 	 * Returns the <code>String</code> representation of this <code>Point2D
 	 * </code>.
 	 * 
+	 * Currently, returns <code>'(' + {@link #toDataString()} + ')'</code>
+	 * 
 	 * @return the <code>String</code> representation.
 	 */
 	public String toString() {
-		return toDataString();
+		return '(' + toDataString() + ')';
 	}
 	
 	/**
 	 * Returns a compact <code>String</code> representation of this <code>
 	 * Point2D</code> that's not too difficult to parse.
 	 * 
+	 * Currently, returns <code>x + "," + y</code>.
+	 * 
 	 * @return the compact representation.
 	 */
 	public String toDataString() {
-		return "(" + x + "," + y + ")";
+		return x + "," + y;
 	}
 
 	/**

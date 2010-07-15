@@ -248,7 +248,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	}
 
 	/**
-	 * Builds the {@link car.orientor.wfio.obj.ObjWireFrameView} and sets the
+	 * Builds the {@link car.orientor.views.ObjWireFrameView} and sets the
 	 * default parameters. Does not add it to the DOM.
 	 */
 	private void buildWireFrameView() {

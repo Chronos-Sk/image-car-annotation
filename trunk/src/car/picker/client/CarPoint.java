@@ -22,8 +22,6 @@ public class CarPoint extends Point2D {
 
 	private Size carSize;
 	private double clickableSize = 12;
-	private double pointSize;
-	private double rectSize;
 	
 	private boolean movable;
 	
@@ -70,6 +68,9 @@ public class CarPoint extends Point2D {
 	public void draw(Surface ctx) {
 		ctx.setFillStyle(getColor());
 		ctx.setStrokeStyle(getColor());
+
+		double pointSize = carSize.pointSize;
+		double rectSize = carSize.rectSize;
 		
         ctx.fillRectangle(x - pointSize / 2, y - pointSize / 2, pointSize, pointSize);
         ctx.strokeRectangle(x - rectSize / 2, y - rectSize / 2, rectSize, rectSize);
@@ -78,13 +79,11 @@ public class CarPoint extends Point2D {
 	/**
 	 * Sets the drawing size of this <code>CarPoint</code>.
 	 * 
-	 * @param size the new drawing size.
+	 * @param carSize the new drawing size.
 	 * @see Size
 	 */
-	public void setSize(Size size) {
-		carSize = size;
-		pointSize = size.pointSize;
-		rectSize = size.rectSize;
+	public void setSize(Size carSize) {
+		this.carSize = carSize;
 	}
 	
 	/**
@@ -188,6 +187,19 @@ public class CarPoint extends Point2D {
 	 */
 	public void setClickableSize(double clickableSize) {
 		this.clickableSize = clickableSize;
+	}
+
+	/**
+	 * Returns a compact <code>String</code> representation of this <code>
+	 * CarPoint</code> that's not too difficult to parse.
+	 * 
+	 * Currently, returns <code>x + "," + y + "," + carSize.rectSize</code>.
+	 * 
+	 * @return the compact representation.
+	 */
+	@Override
+	public String toDataString() {
+		return x + "," + y + "," + carSize.rectSize;
 	}
 
 	/**
