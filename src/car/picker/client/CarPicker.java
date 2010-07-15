@@ -71,7 +71,43 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	// Submit form.
 	private FormPanel form;
 	private Panel formContainer;
-
+	
+	/**
+	 * Adds a hidden input to the submit form with the specified name and value.
+	 * Does nothing if this <code>CarPicker</code> has no form.
+	 * 
+	 * @param name the name of the new hidden input.
+	 * @param value the value of the new hidden input.
+	 */
+	public void addFormEntry(String name, String value) {
+		if ( form != null ) {
+			formContainer.add(new Hidden(name, value));
+		}
+	}
+	
+	/**
+	 * Exports the functions that should be available to hand-written
+	 * JavaScript. Should be called before {@link #onModuleLoad()} returns.
+	 */
+	private native void exportFunctions() /*-{
+		var _this = this;
+		
+		$wnd.CarPicker = new Object();
+		$wnd.CarPicker.addFormEntry = $entry(function(name, value) {
+			_this.@car.picker.client.CarPicker::addFormEntry(Ljava/lang/String;Ljava/lang/String;)(name,value);
+		});
+	}-*/;
+	
+	/**
+	 * Calls the native JavaScript function <code>$wnd.afterCarPickerLoad()
+	 * </code>, if it exists.
+	 */
+	private native void fireAfterModuleLoad() /*-{
+		if ( $wnd.afterCarPickerLoad ) {
+			$wnd.afterCarPickerLoad();
+		}
+	}-*/;
+	
 	/**
 	 * Gets the configuration name defined in the global JavaScript variable
 	 * "carpicker_config", or <code>null</code> if the variable evaluates to
@@ -102,6 +138,8 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	 * environment is set up.
 	 */
 	public void onModuleLoad() {
+		exportFunctions();
+		
 		setImageURL(Window.Location.getParameter(IMAGE_PARAM));
 		
 		String configName = getConfigName();
@@ -284,6 +322,8 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 			buildForm();
 			controlPanel.add(form);
 		}
+		
+		fireAfterModuleLoad();
 	}
 
 	/**
