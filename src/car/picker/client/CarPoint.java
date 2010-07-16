@@ -2,6 +2,7 @@ package car.picker.client;
 
 import gwt.g2d.client.graphics.Color;
 import gwt.g2d.client.graphics.Surface;
+import gwt.g2d.client.graphics.shapes.CircleShape;
 import car.shared.math.Point2D;
 
 /**
@@ -18,14 +19,16 @@ public class CarPoint extends Point2D {
 	/**
 	 * The default color for drawing <code>CarPoint</code>s.
 	 */
-	public final static Color DEFAULT_COLOR = new Color(0, 0, 0);
+	public final static Color DEFAULT_FILL   = new Color(0, 0, 255, 0.75);
+	public final static Color DEFAULT_STROKE = new Color(0, 0, 0);
 
-	private Size carSize;
-	private double clickableSize = 12;
+	private double selectRadius = 6;
+	private double drawRadius = 4;
 	
 	private boolean movable;
 	
-	private Color color = DEFAULT_COLOR;
+	private Color fillColor = DEFAULT_FILL;
+	private Color strokeColor = DEFAULT_STROKE;
 	
 	/**
 	 * Creates an instance of <code>CarPoint</code> located at the origin. Has
@@ -35,14 +38,13 @@ public class CarPoint extends Point2D {
 	 */
 	public CarPoint() {
 		super();
-		setSize(Size.Medium);
 		this.movable = true;
 	}
 
 	/**
 	 * Creates an instance of <code>CarPoint</code> located at the specified
-	 * coordinates. Has an initial size of {@link Size#Medium} and is movable if
-	 * <code>movable</code> is set to <code>true</code>.
+	 * coordinates. Is initially movable if <code>movable</code> is set to
+	 * <code>true</code>.
 	 * 
 	 * @param x the x-coordinate of the new <code>CarPoint</code>.
 	 * @param y the y-coordinate of the new <code>CarPoint</code>.
@@ -51,68 +53,67 @@ public class CarPoint extends Point2D {
 	 */
 	public CarPoint(double x, double y, boolean movable) {
 		super(x, y);
-		setSize(Size.Medium);
 		this.movable = movable;
 	}
 	
 	/**
 	 * Draws this <code>CarPoint</code> onto the supplied <code>Surface</code>.
-	 * Will fill a square of size {@link Size#pointSize} and stroke a square
-	 * of size {@link Size#rectSize}, according to the <code>CarPoint</code>s
-	 * size. Both rectangles are drawn in the <code>CarPoint</code> color.
+	 * Will fill and stroke a circle of size {@link drawSize} in the <code>
+	 * CarPoint</code>'s {@linkplain #getFillColor() fill color} and
+	 * {@linkplain #getFillColor() stroke}
 	 * 
 	 * @param ctx the <code>Surface</code> to draw on.
-	 * @see #getSize()
-	 * @see #getColor()
+	 * @see #getFillColor()
+	 * @see #getStrokeColor()
 	 */
 	public void draw(Surface ctx) {
-		ctx.setFillStyle(getColor());
-		ctx.setStrokeStyle(getColor());
+		ctx.setFillStyle(getFillColor());
+		ctx.setStrokeStyle(getStrokeColor());
 
-		double pointSize = carSize.pointSize;
-		double rectSize = carSize.rectSize;
+		CircleShape circle = new CircleShape(x, y, drawRadius);
 		
-        ctx.fillRectangle(x - pointSize / 2, y - pointSize / 2, pointSize, pointSize);
-        ctx.strokeRectangle(x - rectSize / 2, y - rectSize / 2, rectSize, rectSize);
+		ctx.fillShape(circle);
+		ctx.strokeShape(circle);
 	}
 
 	/**
-	 * Sets the drawing size of this <code>CarPoint</code>.
+	 * Sets the fill color of this <code>CarPoint</code>.
 	 * 
-	 * @param carSize the new drawing size.
-	 * @see Size
-	 */
-	public void setSize(Size carSize) {
-		this.carSize = carSize;
-	}
-	
-	/**
-	 * Returns the drawing size of this <code>CarPoint</code>.
-	 * 
-	 * @return the drawing size.
-	 */
-	public Size getSize() {
-		return carSize;
-	}
-	
-	/**
-	 * Sets the drawing color of this <code>CarPoint</code>.
-	 * 
-	 * @param color the new drawing color.
+	 * @param color the new fill color.
 	 * @see #getColor()
 	 */
-	public void setColor(Color color) {
-		this.color = color;
+	public void setFillColor(Color color) {
+		this.fillColor = color;
 	}
 
 	/**
-	 * Returns the drawing color of this <code>CarPoint</code>.
+	 * Returns the fill color of this <code>CarPoint</code>.
 	 * 
-	 * @return the drawing color.
+	 * @return the fill color.
 	 * @see #setColor(Color)
 	 */
-	public Color getColor() {
-		return color;
+	public Color getFillColor() {
+		return fillColor;
+	}
+
+	/**
+	 * Sets the stroke color of this <code>CarPoint</code>.
+	 * 
+	 * @param color the new stroke color.
+	 * @see #getColor()
+	 */
+	public void setStrokeColor(Color color) {
+		this.strokeColor = color;
+	}
+
+	/**
+	 * Returns the stroke color of this <code>CarPoint</code>.
+	 * 
+	 * @return the stroke color.
+	 * @see #setColor(Color)
+	 */
+	public Color getStrokeColor() {
+		return strokeColor;
 	}
 
 	/**
@@ -138,10 +139,10 @@ public class CarPoint extends Point2D {
 	}
 
 	/**
-	 * Returns true if the supplied <code>Point2D</code> is within the clickable
-	 * area of this <code>CarPoint</code>. The clickable area is defined by a
-	 * rectangle centered at this point with a size defined by
-	 * {@link #getClickableSize()}.
+	 * Returns true if the supplied <code>Point2D</code> are within the
+	 * clickable area of this <code>CarPoint</code>. The clickable area is
+	 * defined by a circle centered at this point with a radius of
+	 * {@link #getSelectRadius()}.
 	 * 
 	 * @param point the point to test.
 	 * @return <code>true</code> if the point is within the clickable area, <code>false</code> otherwise.
@@ -154,8 +155,8 @@ public class CarPoint extends Point2D {
 	/**
 	 * Returns true if the supplied coordinates are within the clickable
 	 * area of this <code>CarPoint</code>. The clickable area is defined by a
-	 * square centered at this point with a size defined by
-	 * {@link #getClickableSize()}.
+	 * circle centered at this point with a radius of
+	 * {@link #getSelectRadius()}.
 	 * 
 	 * @param cx x-coordinate to test.
 	 * @param cy y-coordinate to test.
@@ -163,63 +164,28 @@ public class CarPoint extends Point2D {
 	 * @see #onPoint(Point2D)
 	 */
 	public boolean onPoint(double cx, double cy){
-        return (x - clickableSize / 2 < cx && cx < x + clickableSize / 2 ) &&
-                   (y - clickableSize / 2 < cy && cy < y + clickableSize / 2 );
+        return Math.hypot(x-cx, y-cy) < selectRadius;
 	}
 	
 	/**
-	 * Returns the dimension of the square defining the clickable area of this
+	 * Returns the radius of the circle defining the clickable area of this
 	 * <code>CarPoint</code>.
 	 * 
 	 * @return the clickable dimension.
 	 * @see #setClickableSize(double)
 	 */
-	public double getClickableSize() {
-		return clickableSize;
+	public double getSelectRadius() {
+		return selectRadius;
 	}
 
 	/**
-	 * Sets the dimension of the square defining the clickable area of this
+	 * Sets the radius of the circle defining the clickable area of this
 	 * <code>CarPoint</code>.
 	 * 
-	 * @param clickableSize the new clickable dimension.
-	 * @see #setClickableSize(double)
+	 * @param selectRadius the new clickable dimension.
+	 * @see #getSelectRadius()
 	 */
-	public void setClickableSize(double clickableSize) {
-		this.clickableSize = clickableSize;
-	}
-
-	/**
-	 * Returns a compact <code>String</code> representation of this <code>
-	 * CarPoint</code> that's not too difficult to parse.
-	 * 
-	 * Currently, returns <code>x + "," + y + "," + carSize.rectSize</code>.
-	 * 
-	 * @return the compact representation.
-	 */
-	@Override
-	public String toDataString() {
-		return x + "," + y + "," + carSize.rectSize;
-	}
-
-	/**
-	 * The valid sizes for a <code>CarPoint</code>. Contains size information
-	 * for drawing.
-	 * 
-	 * @author Joshua Little
-	 */
-	public enum Size {
-		Small {{rectSize = 50;}},
-		Medium {{rectSize = 100;}},
-		Large {{rectSize = 150;}};
-		
-		/**
-		 * The size of the square to fill.
-		 */
-		public double pointSize = 6;
-		/**
-		 * The size of the square to stroke.
-		 */
-		public double rectSize;
+	public void setSelectRadius(double selectRadius) {
+		this.selectRadius = selectRadius;
 	}
 }

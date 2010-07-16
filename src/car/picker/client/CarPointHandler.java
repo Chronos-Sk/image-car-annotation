@@ -32,6 +32,9 @@ import com.google.gwt.user.client.ui.Image;
 /**
  * Handles drawing and user-interaction for a set of {@link CarPoint}s.
  * 
+ * Note: Car sizes are no longer used, as we have decided just to use points
+ *       to denote cars, rather than rectangles.
+ * 
  * @author Joshua
  */
 public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
@@ -48,13 +51,19 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	// List of registrations for the handlers that *this* object creates.
 	private List<HandlerRegistration> handlerRegs = null;
 	
-	// Current selected car size.
-	private CarPoint.Size carSize = CarPoint.Size.Medium;
+	// Colors to draw CarPoints in:
 	
-	// Colors to draw CarPoints in.
-	private Color regularColor = CarPoint.DEFAULT_COLOR; // Default state
-	private Color focusedColor = new Color(0, 0, 126); //Selected, not dragging.
-	private Color draggingColor = new Color(0, 0, 255); // Select and dragging.
+	// Default state
+	private Color regularFill   = CarPoint.DEFAULT_FILL;
+	private Color regularStroke = CarPoint.DEFAULT_STROKE;
+	
+	//Selected, not dragging.
+	private Color focusedFill   = new Color(255, 255, 0, 0.75);
+	private Color focusedStroke = new Color(0, 0, 0);
+	
+	// Select and dragging.
+	private Color draggingFill   = new Color(255, 255, 0, 1.0);
+	private Color draggingStroke = new Color(0, 0, 0);
 	
 	// Mouse state
 	private boolean dragging = false;
@@ -98,35 +107,6 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 		}
 		
 		handlerRegs.clear(); // These aren't registered no more.
-	}
-	
-	/**
-	 * Sets the car {@linkplain CarPoint.Size size} to use when creating
-	 * {@link CarPoint}s. Also updates the currently focused
-	 * <code>CarPoint</code>'s size.
-	 * 
-	 * @param carSize the new size.
-	 * @see #getCarSize()
-	 */
-	public void setCarSize(CarPoint.Size carSize) {
-		this.carSize = carSize;
-		
-		CarPoint focusedCar = getFocusedCar();
-		if ( focusedCar != null ) { // If there's a focused car...
-			focusedCar.setSize(carSize); // Update its size.
-			draw();
-		}
-	}
-	
-	/**
-	 * Returns the current car {@linkplain CarPoint.Size size} used for creating
-	 * cars.
-	 * 
-	 * @return the current car size.
-	 * @see #setCarSize(CarPoint.Size)
-	 */
-	public CarPoint.Size getCarSize() {
-		return carSize;
 	}
 	
 	/**
@@ -199,10 +179,12 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 		if ( carPoint != focused ) {
 			// Update drawing colors to look responsive.
 			if ( focused != null ) {
-				focused.setColor(regularColor);
+				focused.setFillColor(regularFill);
+				focused.setStrokeColor(regularStroke);
 			}
 			if ( carPoint != null ) {
-				carPoint.setColor(focusedColor);
+				carPoint.setFillColor(focusedFill);
+				carPoint.setStrokeColor(focusedStroke);
 			}
 
 			focused = carPoint;
@@ -232,23 +214,21 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	 * @return the <code>CarPoint</code> added.
 	 */
 	public CarPoint addCar(Point2D point) {
-		return addCar(point, carSize, true);
+		return addCar(point, true);
 	}
 	
 	/**
 	 * 
-	 * Adds a {@link CarPoint} of the specified {@linkplain CarPoint.Size size}
-	 * at the specified point. The <code>CodePoint</code> is movable if <code>
-	 * movable</code> is set to <code>true</code>.
+	 * Adds a {@link CarPoint} at the specified point. The
+	 * <code>CodePoint</code> is movable if <code>movable</code> is set to
+	 * <code>true</code>.
 	 * 
 	 * @param point where to add the <code>CarPoint</code>
-	 * @param size the size of the new <code>CarPoint</code>
 	 * @param movable whether the <code>CarPoint</code> should be movable.
 	 * @return the <code>CarPoint</code> added.
 	 */
-	public CarPoint addCar(Point2D point, CarPoint.Size size, boolean movable) {
+	public CarPoint addCar(Point2D point, boolean movable) {
 		CarPoint newCarPoint = new CarPoint(point.x, point.y, movable);
-		newCarPoint.setSize(size);
 		
 		carPoints.add(newCarPoint);
 		
@@ -338,7 +318,8 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	 * Causes the focused element to no longer follow the mouse cursor.
 	 */
 	private void endDragging() {
-		getFocusedCar().setColor(focusedColor);
+		getFocusedCar().setFillColor(focusedFill);
+		getFocusedCar().setStrokeColor(focusedStroke);
 		dragging = false;
 	}
 
@@ -348,7 +329,8 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	 * @see #onMouseDown(MouseDownEvent)
 	 */
 	private void startDragging() {
-		getFocusedCar().setColor(draggingColor);
+		getFocusedCar().setFillColor(draggingFill);
+		getFocusedCar().setStrokeColor(draggingStroke);
 		dragging = true;
 	}
 

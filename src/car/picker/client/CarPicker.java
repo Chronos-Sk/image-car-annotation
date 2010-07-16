@@ -13,8 +13,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
@@ -26,9 +24,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
@@ -43,11 +39,6 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	// Parameter name for image URL.
 	private static final String IMAGE_PARAM = "img";
 
-	// Labels for size radio buttons.
-	private String SMALL_LABEL = "Small";
-	private String MEDIUM_LABEL = "Medium";
-	private String LARGE_LABEL = "Large";
-	
 	private Config config; // Stores form configuration.
 	
 	// Handles the drawing and manipulating of CarPoints.
@@ -64,15 +55,10 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	private Button removeButton; // Button to remove a CarPoint.
 	private Button resetButton; // Button to reset the widget.
 	
-	// Changes the selected (and future) car points to their respective sizes.
-	private RadioButton smallButton;
-	private RadioButton mediumButton;
-	private RadioButton largeButton;
-	
 	// Submit form.
 	private FormPanel form;
 	private Panel formContainer;
-	private SubmitButton submit;
+	private Button submit;
 	
 	/**
 	 * Adds a hidden input to the submit form with the specified name and value.
@@ -292,69 +278,10 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 			}
 		});
 		
-		// Radios set size of selected car and future cars.
-		smallButton = new RadioButton("size", SMALL_LABEL);
-		mediumButton = new RadioButton("size", MEDIUM_LABEL);
-		largeButton = new RadioButton("size", LARGE_LABEL);
-		
-		mediumButton.setValue(true); // Default size is Medium.
-		
-		// Handler updates car size depending on source radio button.
-		ClickHandler sizeHandler = new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				String label = ((RadioButton) event.getSource()).getText();
-				
-				CarPoint.Size newSize = null;
-				if ( label.equals(SMALL_LABEL) ) {
-					newSize = CarPoint.Size.Small;
-				} else if ( label.equals(MEDIUM_LABEL) ) {
-					newSize = CarPoint.Size.Medium;
-				} else if ( label.equals(LARGE_LABEL) ) {
-					newSize = CarPoint.Size.Large;
-				} else {
-					throw new IllegalStateException(
-						"Size handler received event from erroneous source.");
-				}
-				
-				// Update new size.
-				carPointHandler.setCarSize(newSize);
-			}
-		};
-		
-		smallButton.addClickHandler(sizeHandler);
-		mediumButton.addClickHandler(sizeHandler);
-		largeButton.addClickHandler(sizeHandler);
-		
-		// Updates the size radio buttons when the user selects a CarPoint.
-		carPointHandler.addSelectionHandler(new SelectionHandler<CarPoint>() {
-			@Override
-			public void onSelection(SelectionEvent<CarPoint> event) {
-				CarPoint carPoint = event.getSelectedItem();
-				
-				if ( carPoint != null ) {
-					switch ( carPoint.getSize() ) {
-						case Small:
-							smallButton.setValue(true);
-							break;
-						case Medium:
-							mediumButton.setValue(true);
-							break;
-						case Large:
-							largeButton.setValue(true);
-							break;
-					}
-				}
-			}
-		});
-		
 		// Fill control panel.
 		controlPanel = new FlowPanel();
 		controlPanel.add(removeButton);
 		controlPanel.add(resetButton);
-		controlPanel.add(smallButton);
-		controlPanel.add(mediumButton);
-		controlPanel.add(largeButton);
 		
 		if ( config.hasForm() ) {
 			buildForm();
@@ -379,10 +306,17 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 		// Make the submit button appear correctly.
 		Style formStyle = formElement.getStyle();
 		formStyle.setDisplay(Display.INLINE_BLOCK);
-		formStyle.setPaddingLeft(0.5, Unit.EM);
+		formStyle.setFloat(Style.Float.RIGHT);
 
-		submit = new SubmitButton("Submit");
+		submit = new Button("Submit");
 		submit.getElement().setId("carpicker-submit");
+		
+		submit.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				form.submit();
+			}
+		});
 		
 		formContainer = new FlowPanel();
 		formContainer.add(submit);
