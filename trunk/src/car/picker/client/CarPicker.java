@@ -4,6 +4,7 @@ import gwt.g2d.client.graphics.Surface;
 import car.shared.config.Config;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
@@ -38,7 +39,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
  */
 public class CarPicker extends FocusPanel implements EntryPoint {
 	// Name of div tag to put main widget in.
-	private static final String CONTAINER_NAME = "canvasContainer";
+	private static final String CONTAINER_NAME = "carpicker-container";
 	// Parameter name for image URL.
 	private static final String IMAGE_PARAM = "img";
 
@@ -71,6 +72,7 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	// Submit form.
 	private FormPanel form;
 	private Panel formContainer;
+	private SubmitButton submit;
 	
 	/**
 	 * Adds a hidden input to the submit form with the specified name and value.
@@ -86,6 +88,15 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	}
 	
 	/**
+	 * Sets whether the submit button in the form should be enabled.
+	 * 
+	 * @param enabled whether the submit button should be enabled.
+	 */
+	public void setFormEnabled(boolean enabled) {
+		submit.setEnabled(enabled);
+	}
+	
+	/**
 	 * Exports the functions that should be available to hand-written
 	 * JavaScript. Should be called before {@link #onModuleLoad()} returns.
 	 */
@@ -95,6 +106,9 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 		$wnd.CarPicker = new Object();
 		$wnd.CarPicker.addFormEntry = $entry(function(name, value) {
 			_this.@car.picker.client.CarPicker::addFormEntry(Ljava/lang/String;Ljava/lang/String;)(name,value);
+		});
+		$wnd.CarPicker.setFormEnabled = $entry(function(name, value) {
+			_this.@car.picker.client.CarPicker::setFormEnabled(Z)(name,value);
 		});
 	}-*/;
 	
@@ -107,7 +121,7 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 			$wnd.afterCarPickerLoad();
 		}
 	}-*/;
-	
+
 	/**
 	 * Gets the configuration name defined in the global JavaScript variable
 	 * "carpicker_config", or <code>null</code> if the variable evaluates to
@@ -118,6 +132,21 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	public native String getConfigName() /*-{
 		if ( $wnd.carpicker_config ) {
 			return $wnd.carpicker_config;
+		} else {
+			return null;
+		}
+	}-*/;
+	
+	/**
+	 * Gets the image URL defined in the global JavaScript variable
+	 * "carpicker_image", or <code>null</code> if the variable evaluates to
+	 * <code>false</code>.
+	 * 
+	 * @return the supplied image URL, or <code>null</code>.
+	 */
+	public native String getImageURL() /*-{
+		if ( $wnd.carpicker_image ) {
+			return $wnd.carpicker_image;
 		} else {
 			return null;
 		}
@@ -139,8 +168,17 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		exportFunctions();
+
+		String url = getImageURL();
 		
-		setImageURL(Window.Location.getParameter(IMAGE_PARAM));
+		// If a url wasn't specified in the host HTML...
+		if ( url == null ) {
+			// Look for one in a GET parameter.
+			url = Window.Location.getParameter(IMAGE_PARAM);
+		}
+
+		GWT.log("Image URL: " + url);
+		setImageURL(url);
 		
 		String configName = getConfigName();
 		
@@ -343,7 +381,7 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 		formStyle.setDisplay(Display.INLINE_BLOCK);
 		formStyle.setPaddingLeft(0.5, Unit.EM);
 
-		SubmitButton submit = new SubmitButton("Submit");
+		submit = new SubmitButton("Submit");
 		submit.getElement().setId("carpicker-submit");
 		
 		formContainer = new FlowPanel();
@@ -367,6 +405,8 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	 * and initialized.
 	 */
 	private void generateFormData() {
+		submit.setEnabled(false);
+		
 		for ( CarPoint carPoint : carPointHandler.getCars() ) {
 			formContainer.add(new Hidden("car", "" + carPoint.toDataString()));
 		}

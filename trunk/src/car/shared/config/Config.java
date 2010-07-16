@@ -217,15 +217,9 @@ public class Config implements HasValueChangeHandlers<Boolean> {
 					try {
 						finishFallback();
 					} catch ( Exception ex2 ) {
-						// Exception chains can't form trees. Print one, chain
-						// the other, I guess.
 						ex2.printStackTrace();
-						
-						throw new RuntimeException(
-								"loadFallback() failed.", ex);
 					}
 					
-					// Only reached if loadFallback() completes successfully.
 					throw ex;
 				}
 			}
