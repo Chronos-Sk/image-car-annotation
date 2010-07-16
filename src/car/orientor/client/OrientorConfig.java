@@ -167,6 +167,8 @@ public class OrientorConfig extends Config {
 			// Wire-frame's name.
 			String name = wireFrameElement.getAttribute("name");
 			
+			int id = Integer.valueOf(wireFrameElement.getAttribute("id"));
+			
 			// getAttribute() will return null if the "default" attribute has
 			// not been explicitly set. Thus use "true"'s equals function.
 			boolean isDefault =
@@ -177,6 +179,7 @@ public class OrientorConfig extends Config {
 			
 			// Create default shell.
 			ObjWireFrame wireFrame = new ObjWireFrame();
+			wireFrame.id = id;
 			
 			GWT.log("Loading wire-frame: " + name);
 			

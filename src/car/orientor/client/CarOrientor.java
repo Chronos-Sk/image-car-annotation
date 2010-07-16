@@ -3,6 +3,10 @@ package car.orientor.client;
 import gwt.g2d.client.graphics.Surface;
 import gwt.g2d.client.graphics.canvas.CanvasElement;
 import gwt.g2d.client.math.Rectangle;
+
+import java.util.List;
+import java.util.Map;
+
 import car.orientor.client.wfio.obj.ObjWireFrame;
 import car.orientor.input.Slider;
 import car.orientor.views.Drawable;
@@ -10,6 +14,7 @@ import car.orientor.views.MovableImageView;
 import car.orientor.views.ObjWireFrameView;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
@@ -46,7 +51,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
  */
 public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	// Containing div id.
-	private static final String CONTAINER_NAME = "canvasContainer";
+	private static final String CONTAINER_NAME = "carorientor-container";
 	// Name of parameter used for image URL.
 	private static final String IMAGE_PARAM = "img";
 	// Assumed total horizontal border width of views.
@@ -88,6 +93,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	// Submit form.
 	private FormPanel form;
 	private Panel formContainer;
+	private SubmitButton submit;
 
 	/**
 	 * Adds a hidden input to the submit form with the specified name and value.
@@ -101,6 +107,30 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 			formContainer.add(new Hidden(name, value));
 		}
 	}
+
+	/**
+	 * Sets whether the submit button in the form should be enabled.
+	 * 
+	 * @param enabled whether the submit button should be enabled.
+	 */
+	public void setFormEnabled(boolean enabled) {
+		submit.setEnabled(enabled);
+	}
+	
+	/**
+	 * Changes the car rectangle being drawn.
+	 * 
+	 * @param x x-coordinate of upper-left corner.
+	 * @param y y-coordinate of upper-left corner.
+	 * @param width width of new rectangle.
+	 * @param height height of new rectangle.
+	 */
+	public void setRectangle(double x, double y, double width, double height) {
+		carRect = new Rectangle(x, y, width, height);
+		movableImageView.setRectangle(carRect);
+		movableImageView.resetOffset();
+		redraw();
+	}
 	
 	/**
 	 * Exports the functions that should be available to hand-written
@@ -113,6 +143,12 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		$wnd.CarOrientor.addFormEntry = $entry(function(name, value) {
 			_this.@car.orientor.client.CarOrientor::addFormEntry(Ljava/lang/String;Ljava/lang/String;)(name,value);
 		});
+		$wnd.CarOrientor.setFormEnabled = $entry(function(enabled) {
+			_this.@car.orientor.client.CarOrientor::setFormEnabled(Z)(enabled);
+		});
+		$wnd.CarOrientor.setCarRectangle = $entry(function(x,y,w,h) {
+			_this.@car.orientor.client.CarOrientor::setRectangle(DDDD)(x,y,w,h);
+		});
 	}-*/;
 
 	/**
@@ -120,11 +156,11 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	 * </code>, if it exists.
 	 */
 	private native void fireAfterModuleLoad() /*-{
-		if ( $wnd.afterCarPickerLoad ) {
-			$wnd.afterCarPickerLoad();
+		if ( $wnd.afterCarOrientorLoad ) {
+			$wnd.afterCarOrientorLoad();
 		}
 	}-*/;
-	
+
 	/**
 	 * Gets the configuration name defined in the global JavaScript variable
 	 * "carorientor_config", or <code>null</code> if the variable evaluates to
@@ -135,6 +171,21 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	public native String getConfigName() /*-{
 		if ( $wnd.carorientor_config ) {
 			return $wnd.carorientor_config;
+		} else {
+			return null;
+		}
+	}-*/;
+
+	/**
+	 * Gets the image URL defined in the global JavaScript variable
+	 * "carorientor_image", or <code>null</code> if the variable evaluates to
+	 * <code>false</code>.
+	 * 
+	 * @return the supplied image URL, or <code>null</code>.
+	 */
+	public native String getImageURL() /*-{
+		if ( $wnd.carorientor_image ) {
+			return $wnd.carorientor_image;
 		} else {
 			return null;
 		}
@@ -168,14 +219,29 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	public void onModuleLoad() {
 		exportFunctions();
 		
-		setImageURL(Window.Location.getParameter(IMAGE_PARAM));
+		Map<String, List<String>> paramMap = Window.Location.getParameterMap();
 		
-		setCarRectangle(new Rectangle(
-				Integer.valueOf(Window.Location.getParameter("x")),
-				Integer.valueOf(Window.Location.getParameter("y")),
-				Integer.valueOf(Window.Location.getParameter("w")),
-				Integer.valueOf(Window.Location.getParameter("h"))
-				));
+		String url = getImageURL();
+		
+		// If a url wasn't specified in the host HTML...
+		if ( url == null ) {
+			// Look for one in a GET parameter.
+			url = paramMap.get(IMAGE_PARAM).get(0);
+		}
+
+		GWT.log("Image URL: " + url);
+		setImageURL(url);
+		
+		// If it looks like we're GETting a rectangle...
+		if ( paramMap.containsKey("x") ) {
+			// Set it.
+			setCarRectangle(new Rectangle(
+					Integer.valueOf(paramMap.get("x").get(0)),
+					Integer.valueOf(paramMap.get("y").get(0)),
+					Integer.valueOf(paramMap.get("w").get(0)),
+					Integer.valueOf(paramMap.get("h").get(0))
+					));
+		}
 		
 		String configName = getConfigName();
 		
@@ -403,7 +469,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		formStyle.setDisplay(Display.INLINE_BLOCK);
 		formStyle.setPaddingLeft(0.5, Unit.EM);
 		
-		SubmitButton submit = new SubmitButton("Submit");
+		submit = new SubmitButton("Submit");
 		submit.getElement().setId("carorientor-submit");
 		
 		formContainer = new FlowPanel();
@@ -426,11 +492,14 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	 * attached form can be assumed to be non-<code>null</code> and initialized.
 	 */
 	private void generateFormData() {
+		submit.setEnabled(false);
 		// Is there a car?
 		if ( noCarBox.getValue() ) {
 			formContainer.add(new Hidden("car", "false"));
 		} else {
 			formContainer.add(new Hidden("car", "true"));
+			formContainer.add(new Hidden(
+					"carType", "" + wireFrameView.getWireFrame().id));
 			
 			formContainer.add(
 					new Hidden("rotX", "" + wireFrameView.getRotateX()));

@@ -20,6 +20,8 @@ public class ObjWireFrame {
 	public Point3D[] normals; // Normals that Faces index into.
 	public Face[] faces; // The faces comprising the wire-frame.
 	
+	public int id = -1;
+	
 	/**
 	 * Creates a default (empty) instance of <code>ObjWireFrame</code>.
 	 */

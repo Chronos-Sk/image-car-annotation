@@ -2,8 +2,11 @@ package car.orientor.views;
 
 import gwt.g2d.client.graphics.Color;
 import gwt.g2d.client.graphics.Surface;
+import gwt.g2d.client.math.Matrix;
 import gwt.g2d.client.math.Rectangle;
+import car.shared.math.Point2D;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -24,6 +27,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	
 	private Rectangle rect; // Rectangle to draw. (Around car generally.)
 	private double offX, offY; // Translation due to dragging.
+	private Matrix transform;
 	
 	private Surface canvas; // Canvas to draw everything on.
 	
@@ -48,6 +52,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	private double width;
 	private double height;
 	
+	
 	/**
 	 * Creates an instance of <code>MovableImageView</code>
 	 * 
@@ -69,6 +74,8 @@ public class MovableImageView extends FocusPanel implements Drawable {
 		canvas = new Surface(width, height);
 		canvas.setStrokeStyle(rectColor); // Sets the rectangle color.
 
+		transform = new Matrix();
+		
 		reset(); // Set default offset and zoom.
 		
 		setWidget(canvas); // Sets the canvas to be the drawn widget.
@@ -110,11 +117,11 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * @see #getYOffset()
 	 */
 	public void setOffset(double x, double y) {
-		offX = -x; offY = -y;
-		zoom = 1.0;
-		
-		// Recreate transformation matrix.
-		setAbsoluteZoom(getZoom());
+		offX = x; offY = y;
+		transform.setDx(-zoom*x);
+		transform.setDy(-zoom*y);
+
+		invalidate();
 	}
 	
 	/**
@@ -124,7 +131,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * @return the current x-offset.
 	 */
 	public double getXOffset() {
-		return -offX;
+		return offX;
 	}
 
 	/**
@@ -134,7 +141,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * @return the current y-offset.
 	 */
 	public double getYOffset() {
-		return -offY;
+		return offY;
 	}
 	
 	/**
@@ -249,14 +256,15 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 */
 	public void setAbsoluteZoom(double newZoom) {
 		// Reset transformation to identity.
-		canvas.setTransform(1, 0, 0, 1, 0, 0);
-		canvas.scale(newZoom); // Zoom on origin.
-		canvas.translate(offX/newZoom, offY/newZoom); // Translate back.
+		transform.setM11(newZoom);
+		transform.setM22(newZoom);
 		
-		// Try (and fail) to keep center of view the same.
-		translate(width/2*(newZoom - zoom), height/2*(newZoom - zoom));
-		
+		double oldZoom = zoom;
 		zoom = newZoom;
+		
+		setOffset(offX + ( width/oldZoom -  width/zoom)/2,
+				  offY + (height/oldZoom - height/zoom)/2);
+		
 		invalidate();
 	}
 	
@@ -340,12 +348,12 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * @see #resetZoom()
 	 */
 	public void resetOffset() {
-		offX = -rect.getX() + -rect.getWidth()/2  + width/2;
-		offY = -rect.getY() + -rect.getHeight()/2 + height/2;
-		zoom = 1.0;
-		
-		// Recreate transformation matrix.
-		setAbsoluteZoom(getZoom());
+		if ( rect != null ) {
+			setOffset(rect.getX() + rect.getWidth()/2  - width/2,
+					  rect.getY() + rect.getHeight()/2 - height/2);
+		} else {
+			setOffset(0, 0);
+		}
 	}
 	
 	/**
@@ -369,6 +377,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	@Override
 	public boolean draw() {
 		if ( dirty ) {
+			canvas.setTransform(transform); // Set current transform.
 			canvas.clear(); // Clear current view for drawing.
 			
 			// Draw stuff.
@@ -416,16 +425,13 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * image and rectangle right and down, respectively.
 	 * 
 	 * @param dx the amount to move right.
-	 * @param dy the ammount to move down.
+	 * @param dy the amount to move down.
 	 */
 	public void translate(double dx, double dy) {
-		double oldX = offX, oldY = offY;
+		// Divide by zoom so that the image moves with the mouse regardless of
+		// the zoom.
+		setOffset(offX + dx/zoom, offY + dy/zoom);
 		
-		offX -= dx;
-		offY -= dy;
-		
-		canvas.translate((offX - oldX)/zoom, (offY - oldY)/zoom); // Translate back.
-
 		invalidate();
 	}
 	
