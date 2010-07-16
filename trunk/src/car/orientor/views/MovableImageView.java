@@ -4,9 +4,7 @@ import gwt.g2d.client.graphics.Color;
 import gwt.g2d.client.graphics.Surface;
 import gwt.g2d.client.math.Matrix;
 import gwt.g2d.client.math.Rectangle;
-import car.shared.math.Point2D;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Image;
