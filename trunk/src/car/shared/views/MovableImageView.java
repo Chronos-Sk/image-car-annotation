@@ -1,4 +1,4 @@
-package car.orientor.views;
+package car.shared.views;
 
 import gwt.g2d.client.graphics.Color;
 import gwt.g2d.client.graphics.Surface;
@@ -332,8 +332,8 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * both {@link #resetOffset()} and {@link #resetZoom()}.
 	 */
 	public void reset() {
-		resetOffset();
 		resetZoom();
+		resetOffset();
 
 		invalidate();
 	}

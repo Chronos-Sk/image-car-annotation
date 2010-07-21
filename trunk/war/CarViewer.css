@@ -1,0 +1,45 @@
+/** Add css rules here for your application. */
+
+
+/** Example rules used by the template application (remove for your app) */
+h1#project-name {
+  font-size: 2em;
+  font-weight: bold;
+  color: #777777;
+  margin: 40px 0px 70px;
+  text-align: center;
+}
+
+.carViewer {
+  margin: auto;	
+}
+
+.carViewer .g2d-Surface {
+  border: thin solid black;
+}
+
+#carorientor-nocar-panel {
+  display: inline;
+  margin: 0em 0.5em 0em 0.25em;
+}
+
+.sliderPanel {
+  float: left;
+  display: inline-block;
+}
+
+.sliderPanel * {
+  margin-right: 0.75em;
+}
+
+.sliderPanel .gwt-InlineLabel {
+  vertical-align: 7pt; /* Center the text with the range. */
+}
+
+.sliderPanel input[type="range"] {
+  width: 10em;
+}
+
+.resetButton {
+  /* float: right; */
+}

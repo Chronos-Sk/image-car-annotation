@@ -1,4 +1,4 @@
-package car.orientor.input;
+package car.shared.input;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;

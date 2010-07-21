@@ -1,4 +1,4 @@
-package car.orientor.views;
+package car.shared.views3d;
 
 import gwt.g2d.client.graphics.Color;
 import gwt.g2d.client.graphics.Composition;
@@ -7,16 +7,17 @@ import gwt.g2d.client.graphics.Surface;
 import gwt.g2d.client.math.MathHelper;
 import gwt.g2d.client.math.Matrix;
 import gwt.g2d.client.math.Vector2;
-import car.orientor.client.wfio.obj.Face;
-import car.orientor.client.wfio.obj.ObjWireFrame;
 import car.shared.math.Matrix3D;
 import car.shared.math.Point3D;
+import car.shared.views.Drawable;
+import car.shared.views3d.obj.Face;
+import car.shared.views3d.obj.ObjWireFrame;
 
 import com.google.gwt.user.client.ui.FocusPanel;
 
 /**
  * This class allows the viewing of a 3D
- * {@link car.orientor.client.wfio.obj.ObjWireFrame}. It uses a simple
+ * {@link car.shared.views3d.obj.ObjWireFrame}. It uses a simple
  * orthogonal projection. It has functions that allow the rotation of the
  * <code>ObjWireFrame</code> around all three axes.
  * 
@@ -27,7 +28,7 @@ import com.google.gwt.user.client.ui.FocusPanel;
  * 
  * @author Joshua Little
  */
-public class ObjWireFrameView extends FocusPanel implements Drawable {
+public class WireFrameView extends FocusPanel implements Drawable {
 	public static double DEFAULT_X_ROTATION = Math.PI/8;
 	public static double DEFAULT_Y_ROTATION = MathHelper.PI_OVER_4;
 	
@@ -61,7 +62,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	private Color lineColor = new Color(0, 0, 0);
 	
 	/**
-	 * Creates an instance of <code>ObjWireFrameView</code>. The x- and
+	 * Creates an instance of <code>WireFrameView</code>. The x- and
 	 * y-rotation will be set to their respective default values.
 	 * 
 	 * @param wireFrame the wire-frame to draw.
@@ -70,7 +71,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	 * @see #DEFAULT_X_ROTATION
 	 * @see #DEFAULT_Y_ROTATION
 	 */
-	public ObjWireFrameView(ObjWireFrame wireFrame, int width, int height) {
+	public WireFrameView(ObjWireFrame wireFrame, int width, int height) {
 		this.wireFrame = wireFrame;
 		reconstructBuffer(); // Build all of the buffer variables.
 		
@@ -131,7 +132,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	}
 	
 	/**
-	 * Resets this <code>ObjWireFrameView</code>. Changes the rotation to their
+	 * Resets this <code>WireFrameView</code>. Changes the rotation to their
 	 * default rotations.
 	 * 
 	 * @see #DEFAULT_X_ROTATION
@@ -145,7 +146,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	}
 
 	/**
-	 * Returns the underlying canvas surface that this <code>ObjWireFrameView
+	 * Returns the underlying canvas surface that this <code>WireFrameView
 	 * </code> draws on. Drawing on this will result in an immediate change to
 	 * the resultant view.
 	 * 
@@ -178,7 +179,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	}
 
 	/**
-	 * Returns the current x-rotation of this <code>ObjWireFrameView</code>.
+	 * Returns the current x-rotation of this <code>WireFrameView</code>.
 	 * The returned number will be between 0 and two pi, inclusive.
 	 * 
 	 * @return the current x-rotation.
@@ -188,7 +189,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	}
 
 	/**
-	 * Returns the current y-rotation of this <code>ObjWireFrameView</code>.
+	 * Returns the current y-rotation of this <code>WireFrameView</code>.
 	 * The returned number will be between 0 and two pi, inclusive.
 	 * 
 	 * @return the current y-rotation.
@@ -198,7 +199,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	}
 
 	/**
-	 * Returns the current z-rotation of this <code>ObjWireFrameView</code>.
+	 * Returns the current z-rotation of this <code>WireFrameView</code>.
 	 * The returned number will be between 0 and two pi, inclusive.
 	 * 
 	 * @return the current z-rotation.
@@ -380,7 +381,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	}
 
 	/**
-	 * Draws this <code>ObjWireFrameView</code>'s wire-frame onto the view. Will
+	 * Draws this <code>WireFrameView</code>'s wire-frame onto the view. Will
 	 * only draw if it has been invalidated, whether be changing its
 	 * wire-frame or rotation, or by calling {@link #invalidate()}.
 	 * 
@@ -403,7 +404,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	}
 
 	/**
-	 * Forces this <code>ObjWireFrameView</code> to redraw itself.
+	 * Forces this <code>WireFrameView</code> to redraw itself.
 	 * 
 	 * @see #draw()
 	 */
@@ -414,7 +415,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	}
 
 	/**
-	 * Invalidates this <code>ObjWireFrameView</code> so that it will be forced
+	 * Invalidates this <code>WireFrameView</code> so that it will be forced
 	 * to redraw itself on the next call to {@link #draw()}.
 	 * 
 	 * @see #redraw()
@@ -610,7 +611,7 @@ public class ObjWireFrameView extends FocusPanel implements Drawable {
 	
 	/**
 	 * Computes <code>rotMatrix</code> so that multiplying points by it rotates
-	 * them according to this </code>ObjWireFrameView</code>'s current
+	 * them according to this </code>WireFrameView</code>'s current
 	 * rotations.
 	 * 
 	 * Applies the z-rotation, then the y-rotation, and then the x-rotation.

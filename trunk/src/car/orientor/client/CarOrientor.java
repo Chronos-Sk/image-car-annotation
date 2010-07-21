@@ -7,11 +7,14 @@ import gwt.g2d.client.math.Rectangle;
 import java.util.List;
 import java.util.Map;
 
-import car.orientor.client.wfio.obj.ObjWireFrame;
-import car.orientor.input.Slider;
-import car.orientor.views.Drawable;
-import car.orientor.views.MovableImageView;
-import car.orientor.views.ObjWireFrameView;
+import car.shared.input.Slider;
+import car.shared.views.Drawable;
+import car.shared.views.MovableImageMouseHandler;
+import car.shared.views.MovableImageView;
+import car.shared.views3d.WireFrameConfig;
+import car.shared.views3d.WireFrameMouseHandler;
+import car.shared.views3d.WireFrameView;
+import car.shared.views3d.obj.ObjWireFrame;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -57,7 +60,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	// Assumed total horizontal border width of views.
 	private static final int BORDER_WIDTH = 4;
 	
-	private OrientorConfig config; // Holds wire-frame information.
+	private WireFrameConfig config; // Holds wire-frame information.
 	
 	private String imageURL; // URL to image to annotate.
 	private Image image; // Image to annotate.
@@ -71,7 +74,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	private Panel sliderPanel; // Panel containing sliders and their labels.
 	
 	// Panels showing wire-frame and image.
-	private ObjWireFrameView wireFrameView = null;
+	private WireFrameView wireFrameView = null;
 	private MovableImageView movableImageView = null;
 	
 	// Classes responsible for handling mouse events on the views.
@@ -152,7 +155,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	}-*/;
 
 	/**
-	 * Calls the native JavaScript function <code>$wnd.afterCarPickerLoad()
+	 * Calls the native JavaScript function <code>$wnd.afterCarOrientorLoad()
 	 * </code>, if it exists.
 	 */
 	private native void fireAfterModuleLoad() /*-{
@@ -246,9 +249,9 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		String configName = getConfigName();
 		
 		if ( configName == null ) {
-			config = OrientorConfig.get(); // Load and grab default config.
+			config = WireFrameConfig.get(); // Load and grab default config.
 		} else {
-			config = new OrientorConfig(configName);
+			config = new WireFrameConfig(configName);
 		}
 		
 		// Wait for Config to finish loading everything (i.e. wire-frames).
@@ -314,13 +317,13 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	}
 
 	/**
-	 * Builds the {@link car.orientor.views.ObjWireFrameView} and sets the
+	 * Builds the {@link car.shared.views3d.WireFrameView} and sets the
 	 * default parameters. Does not add it to the DOM.
 	 */
 	private void buildWireFrameView() {
 		// Load default car wire-frame and set up wire-frame view.
 		ObjWireFrame carFrame = config.getDefaultWireFrame(); 
-		wireFrameView = new ObjWireFrameView(carFrame, viewWidth, viewHeight);
+		wireFrameView = new WireFrameView(carFrame, viewWidth, viewHeight);
 		
 		// Set up view CSS style.
 		Style wfvStyle = wireFrameView.getElement().getStyle();

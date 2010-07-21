@@ -1,4 +1,4 @@
-package car.orientor.client.wfio.obj;
+package car.shared.views3d.obj;
 
 import java.util.ArrayList;
 

@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import car.orientor.client.wfio.obj.Face;
-import car.orientor.client.wfio.obj.ObjWireFrame;
 import car.shared.math.Point3D;
+import car.shared.views3d.obj.Face;
+import car.shared.views3d.obj.ObjWireFrame;
 
 /**
  * This class supplies methods that can write
- * {@link car.orientor.client.wfio.obj.ObjWireFrame}s out to files. This package
+ * {@link car.shared.views3d.obj.ObjWireFrame}s out to files. This package
  * is not compiled into JavaScript, so this class can use the entire <code>
  * java.io</code> package.
  * 
@@ -22,7 +22,7 @@ public abstract class ObjOut {
 	private ObjOut() {}
 	
 	/**
-	 * Writes the supplied {@link car.orientor.client.wfio.obj.ObjWireFrame} out
+	 * Writes the supplied {@link car.shared.views3d.obj.ObjWireFrame} out
 	 * to the output stream as a valid .obj file.
 	 * 
 	 * @param obj the <code>ObjWireFrame</code> to write out.
@@ -76,7 +76,7 @@ public abstract class ObjOut {
 	}
 	
 	/**
-	 * Formats the {@link car.orientor.client.wfio.obj.Face} into a line that
+	 * Formats the {@link car.shared.views3d.obj.Face} into a line that
 	 * can be written to an .obj file.
 	 * 
 	 * @param face the <code>Face</code> to format.
