@@ -1,4 +1,4 @@
-package car.orientor.input;
+package car.shared.input;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;

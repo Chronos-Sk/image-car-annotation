@@ -1,4 +1,4 @@
-package car.orientor.views;
+package car.shared.views;
 
 /**
  * Specifies a class that knows how to draw itself. Generally used with <code>

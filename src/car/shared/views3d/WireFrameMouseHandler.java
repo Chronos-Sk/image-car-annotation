@@ -1,11 +1,10 @@
 /**
  * 
  */
-package car.orientor.client;
+package car.shared.views3d;
 
-import car.orientor.views.Drawable;
-import car.orientor.views.MovableImageView;
-import car.orientor.views.ObjWireFrameView;
+import car.shared.views.Drawable;
+import car.shared.views.MovableImageView;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -15,10 +14,10 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 
 /**
- * Class responsible for handling mouse events for a {@link ObjWireFrameView}.
+ * Class responsible for handling mouse events for a {@link WireFrameView}.
  * Updates the view's rotation allowing the image to be spun around.
  * 
- * The handler updates the x- and y-rotations of the <code>ObjWireFrameView
+ * The handler updates the x- and y-rotations of the <code>WireFrameView
  * </code> when the user drags the mouse around on it. After each rotation
  * update, the handler also calls {@link Drawable#draw() draw()} on the
  * {@link Drawable}.
@@ -30,7 +29,7 @@ public class WireFrameMouseHandler implements MouseDownHandler, MouseUpHandler,
 	
 	public static final double DEFAULT_DRAGGING_SPEED = 0.01;
 	
-	private ObjWireFrameView view; // View this handler is responsible for.
+	private WireFrameView view; // View this handler is responsible for.
 	
 	// Speed factor for translating mouse-movement to rotation.
 	private double speed;
@@ -42,24 +41,24 @@ public class WireFrameMouseHandler implements MouseDownHandler, MouseUpHandler,
 
 	/**
 	 * Creates a new instance of <code>WireFrameMouseHandler</code> with the
-	 * specified {@link Drawable}, {@link ObjWireFrameView}, and the default
+	 * specified {@link Drawable}, {@link WireFrameView}, and the default
 	 * rotation speed.
 	 * 
 	 * @param drawer 
 	 * @param view
 	 */
-	public WireFrameMouseHandler(Drawable drawer, ObjWireFrameView view) {
+	public WireFrameMouseHandler(Drawable drawer, WireFrameView view) {
 		this(drawer, view, 0.01);
 	}
 
 	/**
 	 * Creates a new instance of <code>WireFrameMouseHandler</code> with the
-	 * specified {@link Drawable}, {@link ObjWireFrameView}, and rotation speed.
+	 * specified {@link Drawable}, {@link WireFrameView}, and rotation speed.
 	 * 
 	 * @param drawer
 	 * @param view
 	 */
-	public WireFrameMouseHandler(Drawable drawer, ObjWireFrameView view, double speed) {
+	public WireFrameMouseHandler(Drawable drawer, WireFrameView view, double speed) {
 		this.drawer = drawer;
 		this.view = view;
 		this.speed = speed;
@@ -89,7 +88,7 @@ public class WireFrameMouseHandler implements MouseDownHandler, MouseUpHandler,
 	}
 
 	/**
-	 * Updates the {@link ObjWireFrameView}'s translation. Calls 
+	 * Updates the {@link WireFrameView}'s translation. Calls 
 	 * {@link MovableImageView#translate(double, double) translate} with
 	 * the change in mouse position since the last mouse event. Calls
      * {@link Drawable#draw()} afterwards.

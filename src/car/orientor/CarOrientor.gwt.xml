@@ -17,27 +17,12 @@
     <inherits name='com.google.gwt.libideas.LibIdeas' />
     
     <inherits name="car.shared.Shared"/>
+    <inherits name="car.shared.Views3D"/>
    
 	<!-- Specify the app entry point class.                         -->
 	<entry-point class='car.orientor.client.CarOrientor'></entry-point>
 
 	<!-- Specify the paths for translatable code                    -->
 	<source path='client' />
-	<source path="wfio" />
-	<source path="wfio.obj" />
-	<source path="input" />
-	<source path="views" />
 	
-	<replace-with class="car.orientor.input.SliderImplGeneral">
-    	<when-type-is class="car.orientor.input.SliderImpl"/>
-    </replace-with>
-    
-	<replace-with class="car.orientor.input.SliderImplMozilla">
-    	<when-type-is class="car.orientor.input.SliderImpl" />
-    	<any>
-    		<when-property-is name="user.agent" value="gecko"/>
-    		<when-property-is name="user.agent" value="gecko1_8" />
-    	</any>
- 	</replace-with>
- 	
 </module>

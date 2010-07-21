@@ -13,11 +13,31 @@
   <!-- Other module inherits                                      -->
 
   <inherits name="com.google.gwt.xml.XML" />
-  <!-- <inherits name="gwt.g2d.g2d" /> -->
+  <inherits name="gwt.g2d.g2d" />
+  <inherits name='com.google.gwt.widgetideas.WidgetIdeas' />   
+  <inherits name='com.google.gwt.libideas.LibIdeas' />
   
   <!-- Specify the app entry point class.                         -->
   <!-- Specify the paths for translatable code                    -->
   <source path='math'/>
   <source path='config'/>
+  <source path='views'/>
+  <source path='input'/>
+  
+  <public path='resources'/>
+  <stylesheet src='slider.css'/>
+  
+  <replace-with class="car.shared.input.SliderImplGeneral">
+    <when-type-is class="car.shared.input.SliderImpl"/>
+  </replace-with>
+    
+  <replace-with class="car.shared.input.SliderImplMozilla">
+    <when-type-is class="car.shared.input.SliderImpl" />
+      <any>
+        <when-property-is name="user.agent" value="gecko"/>
+    	<when-property-is name="user.agent" value="gecko1_8" />
+      </any>
+  </replace-with>
+ 	
 
 </module>

@@ -1,4 +1,4 @@
-package car.orientor.client.wfio.obj;
+package car.shared.views3d.obj;
 
 /**
  * Represents a face of a {@link ObjWireFrame}. The vertex and normal values

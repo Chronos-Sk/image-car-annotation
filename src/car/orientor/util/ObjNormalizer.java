@@ -7,13 +7,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import car.orientor.client.wfio.obj.ObjIO;
-import car.orientor.client.wfio.obj.ObjWireFrame;
 import car.shared.math.Point3D;
+import car.shared.views3d.obj.ObjIO;
+import car.shared.views3d.obj.ObjWireFrame;
 
 /**
  * This class can be run to normal a .obj file into the coordinate system that
- * {@link car.orientor.views.ObjWireFrameView} uses.
+ * {@link car.shared.views3d.WireFrameView} uses.
  * 
  * Usage: <in_file> <out_file>
  * 
@@ -53,7 +53,7 @@ public class ObjNormalizer {
 	/**
 	 * Converts the specified .obj file. Transforms the file referenced by the
 	 * first <code>String</code> into the coordinate system that
-	 * {@link car.orientor.views.ObjWireFrameView} uses and stores it in the
+	 * {@link car.shared.views3d.WireFrameView} uses and stores it in the
 	 * file referenced by the second <code>String</code>.
 	 * 
 	 * @param fromFile the in file.
@@ -94,7 +94,7 @@ public class ObjNormalizer {
 	
 	/**
 	 * Fixes the wire-frame so that it is in the coordinate system that
-	 * {@link car.orientor.views.ObjWireFrameView} uses.
+	 * {@link car.shared.views3d.WireFrameView} uses.
 	 * 
 	 * @param wireFrame the wire-frame to fix.
 	 */

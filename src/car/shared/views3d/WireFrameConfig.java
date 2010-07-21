@@ -1,13 +1,15 @@
-package car.orientor.client;
+package car.shared.views3d;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import car.orientor.client.wfio.obj.ObjIO;
-import car.orientor.client.wfio.obj.ObjWireFrame;
 import car.shared.config.Config;
+import car.shared.views3d.obj.ObjIO;
+import car.shared.views3d.obj.ObjWireFrame;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
@@ -17,41 +19,42 @@ import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.Text;
 
-public class OrientorConfig extends Config {
+public class WireFrameConfig extends Config {
 	private static ObjWireFrame FALLBACK_MODEL = null;
 	
-	private Map<String, ObjWireFrame> wireFrames;
+	private Map<Integer, ObjWireFrame> wireFrames;
+	private Map<String, ObjWireFrame> wireFramesByName;
 	private String defaultWireFrameName;
 	private ObjWireFrame defaultWireFrame;
 	int wireFramesToLoad;
 	
-	private static OrientorConfig DEFAULT = null;
+	private static WireFrameConfig DEFAULT = null;
 
 	/**
-	 * Returns the singleton <code>OrientorConfig</code> instance representing
+	 * Returns the singleton <code>WireFrameConfig</code> instance representing
 	 * the default configuration.
 	 * 
-	 * @return the default <code>OrientorConfig</code>.
+	 * @return the default <code>WireFrameConfig</code>.
 	 */
-	public static OrientorConfig get() {
+	public static WireFrameConfig get() {
 		if ( DEFAULT == null ) {
-			DEFAULT = new OrientorConfig(DEFAULT_CONFIG);
+			DEFAULT = new WireFrameConfig(DEFAULT_CONFIG);
 		}
 		
 		return DEFAULT;
 	}
 
 	/**
-	 * Creates a new <code>OrientorConfig</code> from the file at the specified
+	 * Creates a new <code>WireFrameConfig</code> from the file at the specified
 	 * URL. If the configuration file cannot be loaded (e.g., it does not
-	 * exist), then the <code>OrientorConfig</code> is set up with a single
+	 * exist), then the <code>WireFrameConfig</code> is set up with a single
 	 * dummy model named "Default", whose definition is obtained from the
 	 * {@link FallbackModel} resource bundle.
 	 * 
 	 * @param url the location of the configuration file to load.
 	 * @throws RuntimeException if there was an error requesting the file.
 	 */
-	public OrientorConfig(String url) {
+	public WireFrameConfig(String url) {
 		super(url);
 	}
 
@@ -60,9 +63,28 @@ public class OrientorConfig extends Config {
 	 * 
 	 * @return an unmodifiable <code>Set</code> of wire-frame names.
 	 * @see #getWireFrame(String)
+	 * @see #getWireFrameIds()
 	 */
 	public Set<String> getWireFrameNames() {
+		return Collections.unmodifiableSet(wireFramesByName.keySet());
+	}
+	
+	/**
+	 * Returns an unmodifiable <code>Set</code> of the loaded wire-frame IDs.
+	 * 
+	 * @return an unmodifiable <code>Set</code> of wire-frame IDs.
+	 */
+	public Set<Integer> getWireFrameIds() {
 		return Collections.unmodifiableSet(wireFrames.keySet());
+	}
+
+	/**
+	 *Returns an unmodifiable <code>Collection</code> of the loaded wire-frames.
+	 * 
+	 * @return an unmodifiable <code>Set</code> of wire-frames.
+	 */
+	public Collection<ObjWireFrame> getWireFrames() {
+		return Collections.unmodifiableCollection(wireFrames.values());
 	}
 
 	/**
@@ -74,11 +96,30 @@ public class OrientorConfig extends Config {
 	 * @throws IllegalArgumentException if no wire-frame with that name can be found.
 	 */
 	public ObjWireFrame getWireFrame(String name) {
-		ObjWireFrame ret = wireFrames.get(name);
+		ObjWireFrame ret = wireFramesByName.get(name);
 		
 		if ( ret == null ) { // If the name is not in the map.
 			throw new IllegalArgumentException(
 					"No WireFrame with name \"" + name + "\" exists.");
+		} else {
+			return ret;
+		}
+	}
+
+	/**
+	 * Returns the wire-frame with the specified ID.
+	 * 
+	 * @param id The ID of the wire-frame to return.
+	 * @return the wire-frame with the specified ID.
+	 * @see #getWireFrameIds()
+	 * @throws IllegalArgumentException if no wire-frame with that ID can be found.
+	 */
+	public ObjWireFrame getWireFrame(int id) {
+		ObjWireFrame ret = wireFrames.get(id);
+		
+		if ( ret == null ) { // If the name is not in the map.
+			throw new IllegalArgumentException(
+					"No WireFrame with ID \"" + id + "\" exists.");
 		} else {
 			return ret;
 		}
@@ -124,7 +165,8 @@ public class OrientorConfig extends Config {
 	 */
 	@Override
 	protected void load() {
-		wireFrames = new TreeMap<String, ObjWireFrame>();
+		wireFramesByName = new TreeMap<String, ObjWireFrame>();
+		wireFrames = new HashMap<Integer, ObjWireFrame>();
 		loadWireFrames(getXMLDoc().getDocumentElement());
 	}
 	
@@ -138,8 +180,12 @@ public class OrientorConfig extends Config {
 			FALLBACK_MODEL = ObjIO.parseObjFile(fm.getFallbackObj().getText());
 		}
 		
-		wireFrames = new TreeMap<String, ObjWireFrame>();
-		wireFrames.put("Default", FALLBACK_MODEL);
+		wireFramesByName = new TreeMap<String, ObjWireFrame>();
+		wireFramesByName.put("Default", FALLBACK_MODEL);
+		
+		wireFrames = new HashMap<Integer, ObjWireFrame>();
+		wireFrames.put(0, FALLBACK_MODEL);
+		
 		setDefaultWireFrame("Default");
 		
 		doneLoading();
@@ -185,7 +231,7 @@ public class OrientorConfig extends Config {
 			
 			// Start loading process.
 			ObjIO.createFromURL(wireFrame, url,
-					new AddCommand(name, wireFrame, isDefault));
+					new AddCommand(id, name, wireFrame, isDefault));
 		}
 	}
 	
@@ -210,24 +256,29 @@ public class OrientorConfig extends Config {
 	/**
 	 * Class wrapping a function that adds the supplied wire-frame to this
 	 * <code> Config</code> when called. Supplied as the callback to
-	 * {@link car.orientor.client.wfio.obj.ObjIO#createFromURL(ObjWireFrame, String, Command)}
+	 * {@link car.shared.views3d.obj.ObjIO#createFromURL(ObjWireFrame, String, Command)}
 	 * 
 	 * @author Joshua
 	 */
 	private class AddCommand implements Command {
 		private String name;
+		private int id;
 		private ObjWireFrame wireFrame;
 		private boolean isDefault;
 		
-		public AddCommand(String name, ObjWireFrame wireFrame, boolean isDefault) {
+		public AddCommand(
+				int id, String name, ObjWireFrame wireFrame, boolean isDefault){
 			this.name = name;
+			this.id = id;
 			this.wireFrame = wireFrame;
 			this.isDefault = isDefault;
 		}
 		
 		@Override
 		public void execute() {
-			wireFrames.put(name, wireFrame); // Add the wire-frame to the map.
+			// Add the wire-frame to the maps.
+			wireFramesByName.put(name, wireFrame);
+			wireFrames.put(id, wireFrame);
 			
 			if ( isDefault ) {
 				// Will override previously specified default wire-frame.
