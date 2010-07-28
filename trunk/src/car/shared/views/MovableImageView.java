@@ -4,6 +4,7 @@ import gwt.g2d.client.graphics.Color;
 import gwt.g2d.client.graphics.Surface;
 import gwt.g2d.client.math.Matrix;
 import gwt.g2d.client.math.Rectangle;
+import car.shared.math.Point2D;
 
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -50,7 +51,6 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	private double width;
 	private double height;
 	
-	
 	/**
 	 * Creates an instance of <code>MovableImageView</code>
 	 * 
@@ -62,7 +62,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	public MovableImageView(Image image, Rectangle rect, int width, int height){
 		this.image = image;
 		this.rect = rect;
-		this.width = width;
+		this.width  = width;
 		this.height = height;
 		
 		if ( image != null ) {
@@ -70,6 +70,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 		}
 		
 		canvas = new Surface(width, height);
+		
 		canvas.setStrokeStyle(rectColor); // Sets the rectangle color.
 
 		transform = new Matrix();
@@ -79,6 +80,31 @@ public class MovableImageView extends FocusPanel implements Drawable {
 		setWidget(canvas); // Sets the canvas to be the drawn widget.
 		
 		invalidate();
+	}
+	
+	@Override
+	public void onLoad() {
+		// Because these aren't available before the canvas is attached.
+		this.width  = canvas.getWidth();
+		this.height = canvas.getHeight();
+	}
+	
+	/**
+	 * Returns the width of this view.
+	 * 
+	 * @return the width of this view.
+	 */
+	public double getWidth() {
+		return width;
+	}
+
+	/**
+	 * Returns the height of this view.
+	 * 
+	 * @return the height of this view.
+	 */
+	public double getHeight() {
+		return height;
 	}
 	
 	/**
@@ -113,6 +139,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * @param y the new y-offset.
 	 * @see #getXOffset()
 	 * @see #getYOffset()
+	 * @see #setOffset(Point2D)
 	 */
 	public void setOffset(double x, double y) {
 		offX = x; offY = y;
@@ -127,6 +154,9 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * moving to the right.
 	 * 
 	 * @return the current x-offset.
+	 * @see #getYOffset()
+	 * @see #getOffset()
+	 * @see #setOffset(double, double)
 	 */
 	public double getXOffset() {
 		return offX;
@@ -137,9 +167,38 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * moving down.
 	 * 
 	 * @return the current y-offset.
+	 * @see #getXOffset()
+	 * @see #getOffset()
+	 * @see #setOffset(double, double)
 	 */
 	public double getYOffset() {
 		return offY;
+	}
+
+	/**
+	 * Sets the new x- and y-offsets for the view. Positive values for <code>x
+	 * </code> and <code>y</code> move the image and rectangle down and right,
+	 * respectively.
+	 * 
+	 * @param off the new offset.
+	 * @see #getOffset()
+	 * @see #setOffset(double, double)
+	 */
+	public void setOffset(Point2D off) {
+		setOffset(off.x, off.y);
+	}
+	
+	/**
+	 * Returns the current offset. Positive y-values and x-values correspond to
+	 * the image moving down and to the right, respectively.
+	 * 
+	 * @return the current offset.
+	 * @see #getXOffset()
+	 * @see #getYOffset()
+	 * @see #setOffset(Point2D)
+	 */
+	public Point2D getOffset() {
+		return new Point2D(offX, offY);
 	}
 	
 	/**
@@ -234,11 +293,11 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * 
 	 * @param t the new zoom factor.
 	 * @see #getZoom()
-	 * @see #setAbsoluteZoom(double)
+	 * @see #setZoom(double)
 	 * @see #getZoomFactor()
 	 */
-	public void setZoom(double t) {
-		setAbsoluteZoom(calcZoom(t));
+	public void setZoomFactor(double t) {
+		setZoom(calcZoom(t));
 	}
 	
 	/**
@@ -248,11 +307,11 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * supplied to this function.
 	 * 
 	 * @param newZoom the new absolute zoom to apply.
-	 * @see #setZoom(double)
+	 * @see #setZoomFactor(double)
 	 * @see #getZoom()
 	 * @see #getZoomFactor()
 	 */
-	public void setAbsoluteZoom(double newZoom) {
+	public void setZoom(double newZoom) {
 		// Reset transformation to identity.
 		transform.setM11(newZoom);
 		transform.setM22(newZoom);
@@ -270,8 +329,8 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * Returns the effective zoom applied to the image and rectangle.
 	 * 
 	 * @return the effective zoom.
+	 * @see #setZoomFactor(double)
 	 * @see #setZoom(double)
-	 * @see #setAbsoluteZoom(double)
 	 * @see #getZoomFactor()
 	 */
 	public double getZoom() {
@@ -308,8 +367,8 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * would be due to rounding error.
 	 * 
 	 * @return the zoom-factor mapping to the current zoom.
+	 * @see #setZoomFactor(double)
 	 * @see #setZoom(double)
-	 * @see #setAbsoluteZoom(double)
 	 * @see #getZoom()
 	 */
 	public double getZoomFactor() {
@@ -347,6 +406,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 */
 	public void resetOffset() {
 		if ( rect != null ) {
+			// Center on rectangle.
 			setOffset(rect.getX() + rect.getWidth()/2  - width/2,
 					  rect.getY() + rect.getHeight()/2 - height/2);
 		} else {
@@ -361,7 +421,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * @see #resetOffset()
 	 */
 	public void resetZoom() {
-		setAbsoluteZoom(defaultZoom);
+		setZoom(defaultZoom);
 		invalidate();
 	}
 	

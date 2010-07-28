@@ -115,12 +115,8 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	 * 
 	 * @return the supplied configuration file name, or <code>null</code>.
 	 */
-	public native String getConfigName() /*-{
-		if ( $wnd.carpicker_config ) {
-			return $wnd.carpicker_config;
-		} else {
-			return null;
-		}
+	public native String readConfigName() /*-{
+		return $wnd.carpicker_config;
 	}-*/;
 	
 	/**
@@ -130,12 +126,8 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	 * 
 	 * @return the supplied image URL, or <code>null</code>.
 	 */
-	public native String getImageURL() /*-{
-		if ( $wnd.carpicker_image ) {
-			return $wnd.carpicker_image;
-		} else {
-			return null;
-		}
+	public native String readImageURL() /*-{
+		return $wnd.carpicker_image;
 	}-*/;
 	
 	/**
@@ -155,7 +147,7 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 	public void onModuleLoad() {
 		exportFunctions();
 
-		String url = getImageURL();
+		String url = readImageURL();
 		
 		// If a url wasn't specified in the host HTML...
 		if ( url == null ) {
@@ -166,7 +158,7 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 		GWT.log("Image URL: " + url);
 		setImageURL(url);
 		
-		String configName = getConfigName();
+		String configName = readConfigName();
 		
 		if ( configName == null ) {
 			config = Config.get(); // Load and grab default config.
@@ -233,7 +225,7 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 		
 		// Set up the canvas to draw everything on.
 		canvas = new Surface();
-		canvas.getElement().setId("carCanvas");
+		canvas.getElement().setId("carPickerCanvas");
 		
 		// Build handler responsible for dealing with user-interactions.
 		carPointHandler = new CarPointHandler(canvas, image);
@@ -253,6 +245,7 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 				style.setHeight(image.getHeight(), Unit.PX);
 				
 				carPointHandler.draw();
+				fireAfterModuleLoad();
 			}
 		});
 	}
@@ -287,8 +280,6 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 			buildForm();
 			controlPanel.add(form);
 		}
-		
-		fireAfterModuleLoad();
 	}
 
 	/**

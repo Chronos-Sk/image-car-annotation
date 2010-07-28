@@ -29,7 +29,16 @@ import com.google.gwt.user.client.ui.FocusPanel;
  * @author Joshua Little
  */
 public class WireFrameView extends FocusPanel implements Drawable {
+	/**
+	 * The default x-axis rotation for newly created and reset
+	 * <code>WireFrameView</code>s.
+	 */
 	public static double DEFAULT_X_ROTATION = Math.PI/8;
+	
+	/**
+	 * The default y-axis rotation for newly created and reset
+	 * <code>WireFrameView</code>s.
+	 */
 	public static double DEFAULT_Y_ROTATION = MathHelper.PI_OVER_4;
 	
 	private ObjWireFrame wireFrame = null; // Wire-frame to draw.
@@ -51,12 +60,6 @@ public class WireFrameView extends FocusPanel implements Drawable {
 	
 	private Surface canvas; // Main canvas to draw on.
 	private DirectShapeRenderer builder; // Allows custom path drawing.
-	
-//	private Color backLineColor = new Color(0, 0, 0, 0.0);
-//	private Color frontLineColor = new Color(0, 0, 0, 1.0);
-//	
-//	private double backLineZ = 1.0;
-//	private double frontLineZ = -0.75;
 	
 	// Color to draw the wire-frame in.
 	private Color lineColor = new Color(0, 0, 0);
@@ -570,44 +573,6 @@ public class WireFrameView extends FocusPanel implements Drawable {
 			tNormals[i].multiply(rotMatrix); // Rotate
 		}
 	}
-	
-	// Used back when the lines had a depth-cue. Probably will not be reused,
-	// but the code migth be useful later.
-//	private void buildGradients() {
-//		int[] lines = wireFrame.lines;
-//		
-//		Point3D from;
-//		Point3D to;
-//		
-//		Vector2 tFrom = new Vector2();
-//		Vector2 tTo = new Vector2();
-//
-//		double zDist = frontLineZ-backLineZ;
-//		
-//		for ( int i = 0; i < lines.length; i += 2 ) {
-//			from = tVertices[lines[i]];
-//			to = tVertices[lines[i+1]];
-//			
-//			project(from, tFrom);
-//			project(to, tTo);
-//			
-//			Color backColor;
-//			Color frontColor;
-//			
-//			if ( i == 22 ) {
-//				backColor = new Color(0, 255, 0);
-//				frontColor = new Color(0, 255, 0);
-//			} else {
-//				backColor = Color.lerp(frontLineColor, backLineColor, (from.z - backLineZ)/zDist);
-//				frontColor = Color.lerp(frontLineColor, backLineColor, (to.z - backLineZ)/zDist);
-//			}
-//			
-//			Gradient grad = new LinearGradient(tFrom, tTo);
-//			grad.addColorStop(0, backColor);
-//			grad.addColorStop(1, frontColor);
-//			grads[i/2] = grad;
-//		}
-//	}
 	
 	/**
 	 * Computes <code>rotMatrix</code> so that multiplying points by it rotates

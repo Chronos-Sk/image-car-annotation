@@ -35,7 +35,7 @@ import com.google.gwt.user.client.ui.Image;
  * Note: Car sizes are no longer used, as we have decided just to use points
  *       to denote cars, rather than rectangles.
  * 
- * @author Joshua
+ * @author Joshua Little
  */
 public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 										MouseMoveHandler, KeyUpHandler,
@@ -299,7 +299,7 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	 * itself when {@link #draw()} is called.
 	 */
 	public void invalidate() {
-		// draw() always draws.
+		// Do nothing. The draw method always draws.
 	}
 	
 	/**
@@ -349,13 +349,11 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	 * Responds to mouse-down events. If the location of the event is on a
 	 * currently existing {@link CarPoint}, the method will start dragging on
 	 * that element. Otherwise, the method will create a new <code>CarPoint
-	 * </code> at the location of the click, with the current car
-	 * {@linkplain CarPoint.Size size}, and this method will start dragging on
+	 * </code> at the location of the click, and this method will start dragging on
 	 * the newly created <code>CarPoint</code>.
 	 * 
 	 * @see #startDragging()
 	 * @see #addCar(Point2D)
-	 * @see #getCarSize()
 	 */
 	@Override
 	public void onMouseDown(MouseDownEvent event) {
@@ -417,7 +415,7 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 		switch ( keyCode ) {
 			case KeyCodes.KEY_DELETE:
 			case KeyCodes.KEY_BACKSPACE:
-				event.preventDefault();
+				event.preventDefault(); // Hasn't been working.
 				deleteFocusedCar();
 				break;
 			case KeyCodes.KEY_ESCAPE:

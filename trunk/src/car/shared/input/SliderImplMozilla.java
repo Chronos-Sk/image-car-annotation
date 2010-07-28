@@ -21,7 +21,7 @@ import com.google.gwt.widgetideas.client.SliderBar;
  * 
  * @author Joshua Little
  */
-@SuppressWarnings("deprecation") // SliderBar uses ChangeListeners.
+@SuppressWarnings("deprecation") //SliderBar uses ChangeListeners, which are deprecated.
 public class SliderImplMozilla implements SliderImpl {
 	
 	/**
@@ -36,17 +36,26 @@ public class SliderImplMozilla implements SliderImpl {
 		
 		// Delegating constructors.
 		
+		/**
+		 * Delegates upward and calls {@link #fixit()}.
+		 */
 		public SliderBarExtra(double minValue, double maxValue) {
 			super(minValue, maxValue);
 			fixit();
 		}
 
+		/**
+		 * Delegates upward and calls {@link #fixit()}.
+		 */
 		public SliderBarExtra(double minValue, double maxValue,
 				LabelFormatter labelFormatter, SliderBarImages images) {
 			super(minValue, maxValue, labelFormatter, images);
 			fixit();
 		}
 
+		/**
+		 * Delegates upward and calls {@link #fixit()}.
+		 */
 		public SliderBarExtra(double minValue, double maxValue,
 				LabelFormatter labelFormatter) {
 			super(minValue, maxValue, labelFormatter);
@@ -94,7 +103,7 @@ public class SliderImplMozilla implements SliderImpl {
 						"width" : box.width,
 						"height" : box.height,
 						"screenX": box.left,
-						"screenY":box.top };
+						"screenY": box.top };
 					}
 			}
 		}-*/;
@@ -124,12 +133,14 @@ public class SliderImplMozilla implements SliderImpl {
 		
 	}
 	
+	@Override
 	public Widget createWidget() {
 		return new SliderBarExtra(0, 100);
 	}
 	
 	// Simply delegates.
-	
+
+	@Override
 	public HandlerRegistration addValueChangeHandler(Widget slider, ValueChangeHandler<Double> handler) {
 		return getSliderBar(slider).addValueChangeHandler(handler);
 	}

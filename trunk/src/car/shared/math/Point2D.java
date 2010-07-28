@@ -50,6 +50,16 @@ public class Point2D implements Cloneable {
 		this.x = x;
 		this.y = y;
 	}
+
+	/**
+	 * Adds the supplied <code>Point2D</code> to this <code>Point2D</code>.
+	 * 
+	 * @param addend the <code>Point2D</code> to add.
+	 */
+	public void add(Point2D addend) {
+		this.x += addend.x;
+		this.y += addend.y;
+	}
 	
 	/**
 	 * Computes the magnitude of this <code>Point2D</code>.
@@ -69,6 +79,21 @@ public class Point2D implements Cloneable {
 		
 		x /= magnitude;
 		y /= magnitude;
+	}
+	
+	/**
+	 * Returns the sum of the two <code>Point2D</code> as a new <code>Point2D
+	 * </code>
+	 * 
+	 * @param a first point to add.
+	 * @param b second point to add.
+	 * @return the summand.
+	 */
+	public static Point2D add(Point2D a, Point2D b) {
+		Point2D ret = a.clone();
+		a.add(b);
+		
+		return ret;
 	}
 	
 	/**

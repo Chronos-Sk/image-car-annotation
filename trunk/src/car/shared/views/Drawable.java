@@ -2,7 +2,7 @@ package car.shared.views;
 
 /**
  * Specifies a class that knows how to draw itself. Generally used with <code>
- * Widget</code>s that contain <code>canvas</code>s that need to be redrawn. In
+ * Widget</code>s that contain <code>canvas</code>s that need to be redrawn in
  * response to certain events.
  * 
  * @author Joshua Little

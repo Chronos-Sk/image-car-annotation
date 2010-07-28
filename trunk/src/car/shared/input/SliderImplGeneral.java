@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * The {@link SliderImpl} implementation used for most web browsers.
  * 
- * @author Joshua
+ * @author Joshua Little
  */
 public class SliderImplGeneral implements SliderImpl {
 	
@@ -61,10 +61,12 @@ public class SliderImplGeneral implements SliderImpl {
 		}
 	}
 	
+	@Override
 	public Widget createWidget() {
 		return new SliderImplWidget();
 	}
 
+	@Override
 	public HandlerRegistration addValueChangeHandler(
 			Widget slider, final ValueChangeHandler<Double> handler) {
 		// The SliderImplWidget takes care of this.

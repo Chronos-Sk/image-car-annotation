@@ -44,7 +44,9 @@ import com.google.gwt.xml.client.impl.DOMParseException;
  * @author Joshua Little
  */
 public class Config implements HasValueChangeHandlers<Boolean> {
-	// Default configuration file location.
+	/**
+	 * Default configuration file location.
+	 */
 	public static final String DEFAULT_CONFIG
 									= GWT.getHostPageBaseURL() + "config.xml";
 	
@@ -57,6 +59,7 @@ public class Config implements HasValueChangeHandlers<Boolean> {
 	 * @return the default <code>Config</code>.
 	 */
 	public static Config get() {
+		// JavaScript is (event-based) single-threaded, so this works fine.
 		if ( DEFAULT == null ) {
 			DEFAULT = new Config(DEFAULT_CONFIG);
 		}

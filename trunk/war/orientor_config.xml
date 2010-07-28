@@ -13,6 +13,6 @@
 	<form>
 		<method>GET</method>
 		<action>/hallo.html</action>
-		<target>_self</target>
+		<target>_blank</target>
 	</form>
 </config>

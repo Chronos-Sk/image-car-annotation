@@ -22,11 +22,14 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
  * update, the handler also calls {@link Drawable#draw() draw()} on the
  * {@link Drawable}.
  * 
- * @author Joshua
+ * @author Joshua Little
  */
 public class WireFrameMouseHandler implements MouseDownHandler, MouseUpHandler,
 											  MouseMoveHandler {
 	
+	/**
+	 * Default pixel-to-radian factor when dragging.
+	 */
 	public static final double DEFAULT_DRAGGING_SPEED = 0.01;
 	
 	private WireFrameView view; // View this handler is responsible for.
@@ -63,6 +66,7 @@ public class WireFrameMouseHandler implements MouseDownHandler, MouseUpHandler,
 		this.view = view;
 		this.speed = speed;
 		
+		// Add appropriate event-handlers.
 		view.addMouseDownHandler(this);
 		view.addMouseUpHandler(this);
 		view.addMouseMoveHandler(this);
