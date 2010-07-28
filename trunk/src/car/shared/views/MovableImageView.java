@@ -37,7 +37,7 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	
 	// Minimum and maximum zooms (mapped to zoom-factors 0.0 and 1.0, resp.)
 	private double minZoom = 0.5;
-	private double maxZoom = 4.0;
+	private double maxZoom = 6.0;
 	
 	// For convenience, log of minZoom and maxZoom in our base.
 	private double minZoomLog = Math.log(minZoom) / LOG_BASE;
