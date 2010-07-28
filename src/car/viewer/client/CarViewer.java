@@ -2,15 +2,14 @@ package car.viewer.client;
 
 import gwt.g2d.client.graphics.Surface;
 import gwt.g2d.client.graphics.canvas.CanvasElement;
-import gwt.g2d.client.math.Matrix;
 import gwt.g2d.client.math.Rectangle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import car.shared.input.Slider;
-import car.shared.math.Transforms;
 import car.shared.views.Drawable;
 import car.shared.views.MovableImageMouseHandler;
 import car.shared.views.MovableImageView;
@@ -34,6 +33,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -44,13 +44,15 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 	static {
-		Car.export();
+		Car.export(); // Export the native Car interface.
 	}
 	
 	// Containing div id.
 	private static final String CONTAINER_NAME = "carviewer-container";
 	// Name of parameter used for image URL.
 	private static final String IMAGE_PARAM = "img";
+	
+	private static final int DEFAULT_MINIVIEW_SIZE = 150;
 	
 	private WireFrameConfig config; // Holds wire-frame information.
 	
@@ -60,6 +62,8 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 	
 	private int viewWidth = 330; // Width for each view.
 	private int viewHeight = 330; // Height for each view.
+	
+	private int miniviewSize = DEFAULT_MINIVIEW_SIZE;
 
 	private Panel container; // Main container for this frame.
 
@@ -71,7 +75,11 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 	private WireFrameView wireFrame = null;
 	private MovableImageView view = null;
 	
-	private ArrayList<Car> cars = new ArrayList<Car>();
+	// Maps cars to miniviews.
+	private Map<Car, MovableImageView> miniviews;
+	
+	// List of cars to draw on the view.
+	private ArrayList<Car> cars;
 	
 	/**
 	 * Exports the functions that should be available to hand-written
@@ -81,11 +89,17 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 		var _this = this;
 		
 		$wnd.CarViewer = new Object();
-		$wnd.CarViewer.addCar = $entry(function(car) {
-			_this.@car.viewer.client.CarViewer::addCar(Lcar/viewer/client/Car;)(car.carInst);
+		$wnd.CarViewer.addCar = $entry(function(car, miniview) {
+			_this.@car.viewer.client.CarViewer::addCar(Lcar/viewer/client/Car;Ljava/lang/String;)(car.carInst, miniview);
 		});
 		$wnd.CarViewer.redraw = $entry(function() {
 			_this.@car.viewer.client.CarViewer::redraw()();
+		});
+		$wnd.CarViewer.setMiniview = $entry(function(car,id) {
+			_this.@car.viewer.client.CarViewer::setMiniview(Lcar/viewer/client/Car;Ljava/lang/String;)(car,id);
+		});
+		$wnd.CarViewer.drawMiniview = $entry(function(car) {
+			_this.@car.viewer.client.CarViewer::drawMiniview(Lcar/viewer/client/Car;)(car);
 		});
 	}-*/;
 
@@ -101,25 +115,54 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 
 	/**
 	 * Gets the configuration name defined in the global JavaScript variable
-	 * "carviewer_config", or <code>null</code> if the variable evaluates to
-	 * <code>false</code>.
+	 * "carviewer_config", or <code>null</code> if the variable
+	 * is <code>null</code> or <code>undefined</code>.
 	 * 
 	 * @return the supplied configuration file name, or <code>null</code>.
 	 */
-	public native String getConfigName() /*-{
+	public native String readConfigName() /*-{
 		return $wnd.carviewer_config;
 	}-*/;
 
 	/**
 	 * Gets the image URL defined in the global JavaScript variable
-	 * "carviewer_image", or <code>null</code> if the variable evaluates to
-	 * <code>false</code>.
+	 * "carviewer_image", or <code>null</code> if the variable
+	 * is <code>null</code> or <code>undefined</code>.
 	 * 
 	 * @return the supplied image URL, or <code>null</code>.
 	 */
-	public native String getImageURL() /*-{
+	public native String readImageURL() /*-{
 		return $wnd.carviewer_image;
 	}-*/;
+
+	/**
+	 * Gets the miniview size defined in the global JavaScript variable
+	 * "carviewer_miniview_size" as an integer, or <code>-1</code> if the
+	 * variable is <code>null</code>, <code>undefined</code>, or not a number.
+	 * 
+	 * @return the supplied miniview size, or <code>-1</code>.
+	 */
+	public native int readMiniviewSize() /*-{
+		if ( typeof($wnd.carviewer_miniview_size) == "number" ) {
+			return Math.floor($wnd.carviewer_miniview_size);
+		} else {
+			return -1;
+		}
+	}-*/;
+	
+	/**
+	 * Creates a new instance of <code>CarViewer</code>.
+	 */
+	public CarViewer() {
+		miniviews = new HashMap<Car, MovableImageView>();
+		cars = new ArrayList<Car>();
+		
+		int miniviewSize = readMiniviewSize();
+		if ( miniviewSize != -1 ) {
+			// We were supplied one via JavaScript.
+			this.miniviewSize = miniviewSize;
+		}
+	}
 	
 	/**
 	 * Sets the URL used to load the image to annotate. Must be set before
@@ -142,7 +185,15 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 		draw();
 	}
 	
-	public void addCar(Car car) {
+	/**
+	 * Adds the specified car to this <code>CarViewer</code>. If
+	 * <code>miniviewId</code> is supplied, this function will attempt to build
+	 * a miniview of the car and add it to the 
+	 * 
+	 * @param car
+	 * @param miniviewId
+	 */
+	public void addCar(Car car, String miniviewId) {
 		if ( car == null ) {
 			throw new NullPointerException("Cannot add null car to CarViewer.");
 		}
@@ -150,7 +201,90 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 		GWT.log("Adding car: " + car);
 		
 		cars.add(car);
+		
+		if ( miniviewId != null ) {
+			setMiniview(car, miniviewId);
+		}
+		
 		redraw();
+	}
+	
+	/**
+	 * Builds a miniview for the car and places it in the element with the
+	 * specified ID.
+	 * 
+	 * @param car the car to build a miniview for.
+	 * @param miniviewId the ID of the element to add the miniview to.
+	 * @return the miniview
+	 */
+	private MovableImageView buildMiniview(Car car, String miniviewId) {
+		MovableImageView miniview = new MovableImageView(
+				view.getImage(), null, miniviewSize, miniviewSize); 
+		RootPanel.get(miniviewId).add(miniview);
+		
+		drawMiniview(car, miniview);
+		
+		return miniview;
+	}
+	
+	/**
+	 * Draws the miniview for the specified car.
+	 * 
+	 * @param car the car to draw the miniview for.
+	 */
+	public void drawMiniview(Car car) {
+		drawMiniview(car, miniviews.get(car));
+	}
+	
+	/**
+	 * Draws the miniview for the specified car onto the specified
+	 * {@link car.shared.views.MovableImageView}.
+	 * 
+	 * @param car the car to draw the miniview for.
+	 * @param miniview the view to draw the miniview on.
+	 */
+	private void drawMiniview(Car car, MovableImageView miniview) {
+		double zoom = 0.5 / computeViewScale(car.getScale());
+		double offX = car.getPositionX()-view.getXOffset()-miniviewSize/zoom/2;
+		double offY = car.getPositionY()-view.getYOffset()-miniviewSize/zoom/2;
+
+		miniview.setZoom(zoom);
+		miniview.setOffset(offX, offY);
+		miniview.draw();
+		drawCarOn(car, miniview);
+	}
+	
+	/**
+	 * Sets the miniview for the specified car, removing the old one if it
+	 * exists.
+	 * 
+	 * @param car the car to set the miniview for.
+	 * @param miniviewId the new containing element's ID.
+	 */
+	public void setMiniview(Car car, String miniviewId) {
+		MovableImageView oldView = miniviews.get(car);
+		
+		// If there's an old one, remove it.
+		if ( oldView != null ) {
+			oldView.removeFromParent();
+		}
+		
+		// Build the new miniview.
+		MovableImageView miniview = buildMiniview(car, miniviewId);
+		miniviews.put(car, miniview);
+	}
+	
+	/**
+	 * Converts the generic car-scale into one specific to this
+	 * <code>Widget</code>'s {@link car.shared.views3d.WireFrameView} and image.
+	 * 
+	 * @param carScale the car scale to convert.
+	 * @return the scale in view-space.
+	 */
+	private double computeViewScale(double carScale) {
+		// The scale gets inverted between CarOrientor and here (converting
+		// image-scale to car-scale) so it's still the same multiplicand.
+		return carScale * viewHeight / view.getImage().getHeight();
 	}
 	
 	/**
@@ -160,9 +294,8 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 	public void onModuleLoad() {
 		exportFunctions();
 		
-		String url = getImageURL();
+		String url = readImageURL();
 
-		
 		// If a url wasn't specified in the host HTML...
 		if ( url == null ) {
 			Map<String,List<String>> paramMap=Window.Location.getParameterMap();
@@ -177,7 +310,7 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 		GWT.log("Image URL: " + url);
 		setImageURL(url);
 		
-		String configName = getConfigName();
+		String configName = readConfigName();
 		
 		if ( configName == null ) {
 			config = WireFrameConfig.get(); // Load and grab default config.
@@ -187,7 +320,7 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 		
 		// Wait for Config to finish loading everything (i.e. wire-frames).
 		if ( !config.isLoaded() ) {
-			// Whill fire a ValueChangeEvent with value <code>true</code> when
+			// Will fire a ValueChangeEvent with value <code>true</code> when
 			// finished. JavaScript is single-threaded (and event driven), so
 			// this code doesn't produce a race condition.
 			config.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -230,12 +363,11 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 		container = new FlowPanel();
 		container.add(image);
 		container.add(wireFrame);
-		container.add(view);
+		// container.add(view);
 		
 		setWidget(container);
 		draw();
 		
-		fireAfterModuleLoad();
 	}
 
 	/**
@@ -259,16 +391,34 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 	 */
 	private void buildImageView() {
 		// Initialize the image view with a <code>null</code> image.
-		view = new MovableImageView(image, carRect, viewWidth, viewHeight);
-		view.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
+		//view = new MovableImageView(image, carRect, viewWidth, viewHeight);
 
 		// Load the image and give it to the image view when it's done loading.
 		image = new Image(imageURL);
 		image.addLoadHandler(new LoadHandler() {
 			@Override
 			public void onLoad(LoadEvent event) {
-				view.setImage(image);
+				view = new MovableImageView(image, carRect, image.getWidth(), image.getHeight());
+				view.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
+				new MovableImageMouseHandler(CarViewer.this, view);
+
+				// Set the initial slider value depending on the initial zoom.
+				double initialZoom = view.getZoomFactor() * zoomSlider.getMaximum();
+				zoomSlider.setValue(initialZoom);
+				
+				container.add(view);
+				
+				// Add the things that go after the view:
+				container.add(new InlineLabel("Zoom: "));
+				container.add(zoomSlider);
+				container.add(resetButton);
+				
+				// Set the size so that everything is nice and centered.
+				CarViewer.this.setSize(
+						"" + image.getWidth() , "" + image.getHeight());
 				draw();
+				
+				fireAfterModuleLoad(); // Call the native after-load hook.
 			}
 		});
 		
@@ -276,9 +426,6 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 		// image when we want it to. Setting display to NONE makes sure that it
 		// doesn't directly show up on the page.
 		image.getElement().getStyle().setDisplay(Display.NONE);
-		
-		// Handles translating the image.
-		new MovableImageMouseHandler(CarViewer.this, view);
 	}
 
 	/**
@@ -304,18 +451,16 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 				// exponential one.
 				
 				double frac = event.getValue() / zoomSlider.getMaximum();
-				view.setZoom(frac);
+				view.setZoomFactor(frac);
 				draw();
 			}
 		});
 
-		// Set the initial slider value depending on the initial zoom.
-		double initialZoom = view.getZoomFactor() * zoomSlider.getMaximum();
-		zoomSlider.setValue(initialZoom);
 	}
 		
 	/**
-	 * Draws the view and the wire-frames ontop of it.
+	 * Draws the view and the wire-frames ontop of it. Does not redraw
+	 * miniviews.
 	 */
 	@Override
 	public boolean draw() {
@@ -327,10 +472,8 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 			if ( viewRedrawn ) {
 				// Redraw wire-frames ontop of it.
 				
-				Surface surface = view.getSurface();
-				Matrix buff = new Matrix(); // Buffer matrix.
 				for ( Car car : cars ) {
-					drawCarOn(car, surface, buff);
+					drawCarOn(car, view);
 				}
 			}
 		}
@@ -349,11 +492,14 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 
 	@Override
 	public void invalidate() {
-		view.invalidate();
+		if ( view != null ) {
+			view.invalidate();
+		}
 	}
 	
 	public void reset() {
 		view.reset();
+		zoomSlider.setValue(view.getZoomFactor());
 		redraw();
 	}
 	
@@ -361,28 +507,32 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 	 * Draws the car onto the supplied surface.
 	 * 
 	 * @param car the car to draw.
-	 * @param canvas Canvas to draw the wire-frame on.
-	 * @param mat a buffer matrix to set transformations on, can be <code>null</code>.
+	 * @param view view to draw the wire-frame on.
 	 */
-	protected void drawCarOn(Car car, Surface canvas, Matrix mat) {
-		if ( mat == null ) {
-			mat = new Matrix();
-		}
-		
+	protected void drawCarOn(Car car, MovableImageView view) {
 		CanvasElement fromCanvas = wireFrame.getSurface().getCanvas();
+		Surface surface = view.getSurface();
 		
-		wireFrame.reset();
+		// wireFrame.reset();
 		wireFrame.setWireFrame(config.getWireFrame(car.getType()));
 		wireFrame.setRotate(car.getRotateX(),car.getRotateY(),car.getRotateZ());
+		wireFrame.getSurface().setStrokeStyle(car.getColor());
 		wireFrame.draw();
 		
-		// The canvas may (will) have a strange transform.
-		canvas.save(); // Save the weird transform.
-		// Set the transformation.
-		Transforms.centerAndScale(mat, car.getPosition(), car.getScale());
-		canvas.setTransform(mat);
-		// Draw.
-		canvas.drawImage(fromCanvas, 0, 0, canvas.getWidth(), canvas.getHeight());
-		canvas.restore(); // Restore weird transform.
+		surface.save(); // Save the weird transform.
+		
+		double viewZoom = view.getZoom();
+		double carViewScale = computeViewScale(car.getScale());
+		
+		// Umm, magic?
+		double zoom = viewZoom * carViewScale;
+		double offX = viewWidth  * carViewScale/2- car.getPositionX() +view.getXOffset();
+		double offY = viewHeight * carViewScale/2- car.getPositionY() +view.getYOffset();
+		
+		surface.setTransform(zoom, 0, 0, zoom, -offX*viewZoom, -offY*viewZoom);
+		
+		surface.drawImage(fromCanvas, 0, 0, fromCanvas.getWidth(), fromCanvas.getHeight());
+		
+		surface.restore(); // Restore weird transform.
 	}
 }

@@ -2,6 +2,11 @@ package car.shared.math;
 
 import gwt.g2d.client.math.Matrix;
 
+/**
+ * Provides convience methods for creating certain kinds of transformations.
+ * 
+ * @author Joshua Little
+ */
 public abstract class Transforms {
 	
 	// Abstract + private constructor = non-instantiable.

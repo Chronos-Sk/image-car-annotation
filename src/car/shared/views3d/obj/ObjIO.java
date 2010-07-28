@@ -18,7 +18,7 @@ import com.google.gwt.user.client.Command;
  * Doesn't support writing them, since that's not quite possible in JavaScript
  * (as far as I care, anyways).
  * 
- * @author Joshua
+ * @author Joshua Little
  */
 public abstract class ObjIO {
 	

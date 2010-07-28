@@ -17,9 +17,13 @@ import car.shared.math.Point2D;
 public class CarPoint extends Point2D {
 	
 	/**
-	 * The default color for drawing <code>CarPoint</code>s.
+	 * The default color for filling <code>CarPoint</code>s.
 	 */
 	public final static Color DEFAULT_FILL   = new Color(0, 0, 255, 0.75);
+	
+	/**
+	 * The default color for stroking <code>CarPoint</code>s.
+	 */
 	public final static Color DEFAULT_STROKE = new Color(0, 0, 0);
 
 	private double selectRadius = 6;
@@ -31,8 +35,7 @@ public class CarPoint extends Point2D {
 	private Color strokeColor = DEFAULT_STROKE;
 	
 	/**
-	 * Creates an instance of <code>CarPoint</code> located at the origin. Has
-	 * an initial size of {@link Size#Medium} and is movable.
+	 * Creates an instance of <code>CarPoint</code> located at the origin.
 	 * 
 	 * @see #CarPoint(double, double, boolean)
 	 */
@@ -58,7 +61,7 @@ public class CarPoint extends Point2D {
 	
 	/**
 	 * Draws this <code>CarPoint</code> onto the supplied <code>Surface</code>.
-	 * Will fill and stroke a circle of size {@link drawSize} in the <code>
+	 * Will fill and stroke a circle of size {@link #drawRadius} in the <code>
 	 * CarPoint</code>'s {@linkplain #getFillColor() fill color} and
 	 * {@linkplain #getFillColor() stroke}
 	 * 
@@ -80,7 +83,7 @@ public class CarPoint extends Point2D {
 	 * Sets the fill color of this <code>CarPoint</code>.
 	 * 
 	 * @param color the new fill color.
-	 * @see #getColor()
+	 * @see #getFillColor()
 	 */
 	public void setFillColor(Color color) {
 		this.fillColor = color;
@@ -90,7 +93,7 @@ public class CarPoint extends Point2D {
 	 * Returns the fill color of this <code>CarPoint</code>.
 	 * 
 	 * @return the fill color.
-	 * @see #setColor(Color)
+	 * @see #setFillColor(Color)
 	 */
 	public Color getFillColor() {
 		return fillColor;
@@ -100,7 +103,7 @@ public class CarPoint extends Point2D {
 	 * Sets the stroke color of this <code>CarPoint</code>.
 	 * 
 	 * @param color the new stroke color.
-	 * @see #getColor()
+	 * @see #getStrokeColor()
 	 */
 	public void setStrokeColor(Color color) {
 		this.strokeColor = color;
@@ -110,7 +113,7 @@ public class CarPoint extends Point2D {
 	 * Returns the stroke color of this <code>CarPoint</code>.
 	 * 
 	 * @return the stroke color.
-	 * @see #setColor(Color)
+	 * @see #setStrokeColor(Color)
 	 */
 	public Color getStrokeColor() {
 		return strokeColor;
@@ -172,7 +175,7 @@ public class CarPoint extends Point2D {
 	 * <code>CarPoint</code>.
 	 * 
 	 * @return the clickable dimension.
-	 * @see #setClickableSize(double)
+	 * @see #setSelectRadius(double)
 	 */
 	public double getSelectRadius() {
 		return selectRadius;

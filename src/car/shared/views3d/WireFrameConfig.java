@@ -19,15 +19,31 @@ import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.Text;
 
+/**
+ * An extension of {@link car.shared.config.Config} that allows the loading of
+ * .obj-based wire-frames specified in the Config file.
+ * 
+ * If the configuration file fails to load, the <code>WireFrameConfig</code>
+ * will load the default fallback model defined in {@link FallbackModel}.
+ * 
+ * @author Joshua Little
+ */
 public class WireFrameConfig extends Config {
+	// Fallback model lazily loaded from the FallbackModel bundled resource.
 	private static ObjWireFrame FALLBACK_MODEL = null;
 	
+	// Stores wire-frames by name and id.
 	private Map<Integer, ObjWireFrame> wireFrames;
 	private Map<String, ObjWireFrame> wireFramesByName;
+	
+	// Identifies the default wire-frame.
 	private String defaultWireFrameName;
 	private ObjWireFrame defaultWireFrame;
+	
+	// How many wire-frames left before we're done loading.
 	int wireFramesToLoad;
 	
+	// Default WireFrameConfig.
 	private static WireFrameConfig DEFAULT = null;
 
 	/**
@@ -37,6 +53,7 @@ public class WireFrameConfig extends Config {
 	 * @return the default <code>WireFrameConfig</code>.
 	 */
 	public static WireFrameConfig get() {
+		// JavaScript's (event-based) single-threaded, so this is fine.
 		if ( DEFAULT == null ) {
 			DEFAULT = new WireFrameConfig(DEFAULT_CONFIG);
 		}
@@ -56,6 +73,9 @@ public class WireFrameConfig extends Config {
 	 */
 	public WireFrameConfig(String url) {
 		super(url);
+		
+		wireFramesByName = new TreeMap<String, ObjWireFrame>();
+		wireFrames = new HashMap<Integer, ObjWireFrame>();
 	}
 
 	/**
@@ -137,7 +157,7 @@ public class WireFrameConfig extends Config {
 		defaultWireFrame = getWireFrame(name); // Will throw if name is invalid.
 		defaultWireFrameName = name;
 	}
-
+	
 	/**
 	 * Returns the default wire-frame.
 	 * 
@@ -165,8 +185,8 @@ public class WireFrameConfig extends Config {
 	 */
 	@Override
 	protected void load() {
-		wireFramesByName = new TreeMap<String, ObjWireFrame>();
-		wireFrames = new HashMap<Integer, ObjWireFrame>();
+		assert wireFrames != null && wireFramesByName != null;
+		
 		loadWireFrames(getXMLDoc().getDocumentElement());
 	}
 	
@@ -180,10 +200,11 @@ public class WireFrameConfig extends Config {
 			FALLBACK_MODEL = ObjIO.parseObjFile(fm.getFallbackObj().getText());
 		}
 		
-		wireFramesByName = new TreeMap<String, ObjWireFrame>();
-		wireFramesByName.put("Default", FALLBACK_MODEL);
+		assert wireFrames != null && wireFramesByName != null;
 		
-		wireFrames = new HashMap<Integer, ObjWireFrame>();
+		wireFrames.clear(); wireFramesByName.clear(); // Clear any partial data.
+		
+		wireFramesByName.put("Default", FALLBACK_MODEL);
 		wireFrames.put(0, FALLBACK_MODEL);
 		
 		setDefaultWireFrame("Default");

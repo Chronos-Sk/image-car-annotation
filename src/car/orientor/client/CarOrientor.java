@@ -171,12 +171,8 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	 * 
 	 * @return the supplied configuration file name, or <code>null</code>.
 	 */
-	public native String getConfigName() /*-{
-		if ( $wnd.carorientor_config ) {
-			return $wnd.carorientor_config;
-		} else {
-			return null;
-		}
+	public native String readConfigName() /*-{
+		return $wnd.carorientor_config;
 	}-*/;
 
 	/**
@@ -186,12 +182,8 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	 * 
 	 * @return the supplied image URL, or <code>null</code>.
 	 */
-	public native String getImageURL() /*-{
-		if ( $wnd.carorientor_image ) {
-			return $wnd.carorientor_image;
-		} else {
-			return null;
-		}
+	public native String readImageURL() /*-{
+		return $wnd.carorientor_image;
 	}-*/;
 	
 	/**
@@ -205,14 +197,26 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	}
 
 	/**
-	 * Sets the URL used to load the rectangle around the car to annotate. Must
-	 * be set before onLoad() is called.
+	 * Sets the rectangle drawn on the view for this <code>CarOrientor</code>.
 	 * 
-	 * @param carRect the new rectangle.
+	 * @param carRect the new rectangle to draw.
 	 */
 	public void setCarRectangle(Rectangle carRect) {
 		this.carRect = carRect;
 		draw();
+	}
+
+	/**
+	 * Converts the scale specific to this <code>Widget</code>'s
+	 * {@link car.shared.views3d.WireFrameView} and image into a generic
+	 * generic car-scale that maps <code>y = [-1, 1]</code> in image-space to
+	 * <code>y = [-1,1]</code> in car-space.
+	 * 
+	 * @param viewScale the car scale to convert.
+	 * @return the scale in car-space.
+	 */
+	private double computeCarScale(double viewScale) {
+		return viewScale * viewHeight / movableImageView.getImage().getHeight();
 	}
 	
 	/**
@@ -224,7 +228,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		
 		Map<String, List<String>> paramMap = Window.Location.getParameterMap();
 		
-		String url = getImageURL();
+		String url = readImageURL();
 		
 		// If a url wasn't specified in the host HTML...
 		if ( url == null ) {
@@ -246,7 +250,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 					));
 		}
 		
-		String configName = getConfigName();
+		String configName = readConfigName();
 		
 		if ( configName == null ) {
 			config = WireFrameConfig.get(); // Load and grab default config.
@@ -256,7 +260,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		
 		// Wait for Config to finish loading everything (i.e. wire-frames).
 		if ( !config.isLoaded() ) {
-			// Whill fire a ValueChangeEvent with value <code>true</code> when
+			// Will fire a ValueChangeEvent with value <code>true</code> when
 			// finished. JavaScript is single-threaded (and event driven), so
 			// this code doesn't produce a race condition.
 			config.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -400,7 +404,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 				// exponential one.
 				
 				double frac = event.getValue() / zoomSlider.getMaximum();
-				movableImageView.setZoom(frac);
+				movableImageView.setZoomFactor(frac);
 				draw();
 			}
 		});
@@ -484,6 +488,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		form.addSubmitHandler(new SubmitHandler() {
 			@Override
 			public void onSubmit(SubmitEvent event) {
+				// Turn internal variables into hidden inputs.
 				generateFormData();
 			}
 		});
@@ -511,19 +516,21 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 			formContainer.add(
 					new Hidden("rotZ", "" + wireFrameView.getRotateZ()));
 			
-			// offX and offY go to the corner of the view. The model is in the
-			// center of the view.
-			int posX = (int) -movableImageView.getXOffset();
-			posX += movableImageView.getSurface().getWidth() / 2;
+			double zoom = movableImageView.getZoom();
 			
-			int posY = (int) -movableImageView.getYOffset();
-			posY += movableImageView.getSurface().getHeight() / 2;
+			// offX and offY go to the corner of the image view. The model is in
+			// the center of the wire-frame view.
+			int posX = (int) movableImageView.getXOffset();
+			posX += wireFrameView.getSurface().getWidth() /zoom / 2;
+			
+			int posY = (int) movableImageView.getYOffset();
+			posY += wireFrameView.getSurface().getHeight()/zoom / 2;
 			
 			formContainer.add(new Hidden("posX", "" + posX));
 			formContainer.add(new Hidden("posY", "" + posY));
 			
 			formContainer.add(
-					new Hidden("scale", "" + movableImageView.getZoom()));
+					new Hidden("scale", "" + computeCarScale(zoom)));
 		}
 	}
 	
