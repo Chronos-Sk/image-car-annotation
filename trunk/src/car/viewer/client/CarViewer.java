@@ -101,6 +101,19 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 		$wnd.CarViewer.drawMiniview = $entry(function(car) {
 			_this.@car.viewer.client.CarViewer::drawMiniview(Lcar/viewer/client/Car;)(car);
 		});
+		
+		$wnd.CarViewer.setMaxZoom = $entry(function(minz) {
+			_this.@car.viewer.client.CarViewer::setMaxZoom(D)(maxz);
+		});
+		$wnd.CarViewer.setMinZoom = $entry(function(maxz) {
+			_this.@car.viewer.client.CarViewer::setMinZoom(D)(minz);
+		});
+		$wnd.CarViewer.setZoom = $entry(function(z) {
+			_this.@car.viewer.client.CarViewer::setZoom(D)(z);
+		});
+		$wnd.CarViewer.getZoom = $entry(function() {
+			return _this.@car.viewer.client.CarViewer::getZoom()();
+		});
 	}-*/;
 
 	/**
@@ -272,6 +285,49 @@ public class CarViewer extends FocusPanel implements EntryPoint, Drawable {
 		// Build the new miniview.
 		MovableImageView miniview = buildMiniview(car, miniviewId);
 		miniviews.put(car, miniview);
+	}
+
+	/**
+	 * Sets the minimum zoom of this <code>CarOrientor</code>'s
+	 * {@link car.shared.views.MovableImageView}.
+	 * 
+	 * @param minZoom the new minimum zoom.
+	 */
+	public void setMinZoom(double minZoom) {
+		view.setMinimumZoom(minZoom);
+		redraw();
+	}
+	
+	/**
+	 * Sets the minimum zoom of this <code>CarOrientor</code>'s
+	 * {@link car.shared.views.MovableImageView}.
+	 * 
+	 * @param minZoom the new minimum zoom.
+	 */
+	public void setMaxZoom(double minZoom) {
+		view.setMaximumZoom(minZoom);
+		redraw();
+	}
+	
+	/**
+	 * Sets the current zoom of this <code>CarOrientor</code>'s
+	 * {@link car.shared.views.MovableImageView}.
+	 * 
+	 * @param zoom the new zoom.
+	 */
+	public void setZoom(double zoom) {
+		view.setZoom(zoom);
+		redraw();
+	}
+	
+	/**
+	 * Returns the current zoom of this <code>CarOrientor</code>'s
+	 * {@link car.shared.views.MovableImageView}.
+	 * 
+	 * @return the current zoom.
+	 */
+	public double getZoom() {
+		return view.getZoom();
 	}
 	
 	/**

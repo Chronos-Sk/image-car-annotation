@@ -136,6 +136,49 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	}
 	
 	/**
+	 * Sets the minimum zoom of this <code>CarOrientor</code>'s
+	 * {@link car.shared.views.MovableImageView}.
+	 * 
+	 * @param minZoom the new minimum zoom.
+	 */
+	public void setMinZoom(double minZoom) {
+		movableImageView.setMinimumZoom(minZoom);
+		redraw();
+	}
+	
+	/**
+	 * Sets the minimum zoom of this <code>CarOrientor</code>'s
+	 * {@link car.shared.views.MovableImageView}.
+	 * 
+	 * @param minZoom the new minimum zoom.
+	 */
+	public void setMaxZoom(double minZoom) {
+		movableImageView.setMaximumZoom(minZoom);
+		redraw();
+	}
+	
+	/**
+	 * Sets the current zoom of this <code>CarOrientor</code>'s
+	 * {@link car.shared.views.MovableImageView}.
+	 * 
+	 * @param zoom the new zoom.
+	 */
+	public void setZoom(double zoom) {
+		movableImageView.setZoom(zoom);
+		redraw();
+	}
+	
+	/**
+	 * Returns the current zoom of this <code>CarOrientor</code>'s
+	 * {@link car.shared.views.MovableImageView}.
+	 * 
+	 * @return the current zoom.
+	 */
+	public double getZoom() {
+		return movableImageView.getZoom();
+	}
+	
+	/**
 	 * Exports the functions that should be available to hand-written
 	 * JavaScript. Should be called before {@link #onModuleLoad()} returns.
 	 */
@@ -151,6 +194,19 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		});
 		$wnd.CarOrientor.setCarRectangle = $entry(function(x,y,w,h) {
 			_this.@car.orientor.client.CarOrientor::setRectangle(DDDD)(x,y,w,h);
+		});
+		
+		$wnd.CarOrientor.setMaxZoom = $entry(function(minz) {
+			_this.@car.orientor.client.CarOrientor::setMaxZoom(D)(maxz);
+		});
+		$wnd.CarOrientor.setMinZoom = $entry(function(maxz) {
+			_this.@car.orientor.client.CarOrientor::setMinZoom(D)(minz);
+		});
+		$wnd.CarOrientor.setZoom = $entry(function(z) {
+			_this.@car.orientor.client.CarOrientor::setZoom(D)(z);
+		});
+		$wnd.CarOrientor.getZoom = $entry(function() {
+			return _this.@car.orientor.client.CarOrientor::getZoom()();
 		});
 	}-*/;
 
@@ -447,6 +503,12 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		setSelectedCarName(config.getDefaultWireFrameName());
 		
 		noCarBox = new CheckBox();
+		noCarBox.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				redraw(); // Redraw so that the wire-frame dis/reappears.
+			}
+		});
 		
 		noCar = new FlowPanel();
 		//noCar.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
@@ -611,7 +673,8 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 				movableImageRedrawn = movableImageView.draw();
 			}
 			
-			if ( movableImageRedrawn ) { // If it was redrawn...
+			// If it was redrawn and we're displaying the wire-frame...
+			if ( movableImageRedrawn && !noCarBox.getValue() ) {
 				// Redraw wire-frame ontop of it.
 				drawWireFrameOn(movableImageView.getSurface());
 			}

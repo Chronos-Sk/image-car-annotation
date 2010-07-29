@@ -69,6 +69,9 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	private boolean dragging = false;
 	private CarPoint focused = null; // Selected CarPoint.
 	
+	// Maximum number of CarPoints to allow. <0 = unbounded.
+	private int maxCars = -1;
+	
 	/**
 	 * Creates an instance of <code>CarPointHandler</code>.
 	 * 
@@ -107,6 +110,39 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 		}
 		
 		handlerRegs.clear(); // These aren't registered no more.
+	}
+	
+	/**
+	 * Sets the maximum number of {@link CarPoint}s to allow. Supply a negative
+	 * number to allow an unbounded number.
+	 * 
+	 * @param maxCars the maximum number of <code>CarPoint</code>s, or a negative number.
+	 */
+	public void setMaxCars(int maxCars) {
+		this.maxCars = maxCars;
+	}
+	
+	/**
+	 * Returns the maximum number of {@link CarPoint}s to allow. A negative
+	 * return value means that the number of <code>CarPoint</code>s is
+	 * unbounded.
+	 * 
+	 * @return the maximum number of <code>CarPoint</code>s, or a negative number.
+	 */
+	public int getMaxCars() {
+		return maxCars;
+	}
+	
+	/**
+	 * Returns whether a {@link CarPoint} may be added without throwing an
+	 * exception.
+	 * 
+	 * @return <code>true</code> if a <code>CarPoint</code> may be added. <code>false</code>, otherwise.
+	 */
+	public boolean canAddCar() {
+		maxCars = getMaxCars();
+		
+		return (maxCars < 0 || carPoints.size() < maxCars);
 	}
 	
 	/**
@@ -226,10 +262,16 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	 * @param point where to add the <code>CarPoint</code>
 	 * @param movable whether the <code>CarPoint</code> should be movable.
 	 * @return the <code>CarPoint</code> added.
+	 * @throws IllegalStateException if there's already the maximum number of <code>CarPoint</code>s.
+	 * @see #getMaxCars()
 	 */
 	public CarPoint addCar(Point2D point, boolean movable) {
-		CarPoint newCarPoint = new CarPoint(point.x, point.y, movable);
+		if ( canAddCar() ) {
+			throw new IllegalStateException(
+					"Maximum number of CarPoints reached.");
+		}
 		
+		CarPoint newCarPoint = new CarPoint(point.x, point.y, movable);
 		carPoints.add(newCarPoint);
 		
 		return newCarPoint;
@@ -361,7 +403,11 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 		CarPoint carAt = findCarAt(mousePoint); // Ask for car there.
 		
 		if ( carAt == null ) { // Is there no car there?
-			carAt = addCar(mousePoint);
+			if ( canAddCar() ) {
+				carAt = addCar(mousePoint);
+			} else {
+				return; // We can't do anything.
+			}
 		}
 		
 		setFocusedCar(carAt);
