@@ -266,7 +266,7 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	 * @see #getMaxCars()
 	 */
 	public CarPoint addCar(Point2D point, boolean movable) {
-		if ( canAddCar() ) {
+		if ( !canAddCar() ) {
 			throw new IllegalStateException(
 					"Maximum number of CarPoints reached.");
 		}

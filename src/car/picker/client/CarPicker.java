@@ -110,6 +110,16 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 			$wnd.afterCarPickerLoad();
 		}
 	}-*/;
+	
+	/**
+	 * Calls the native JavaScript function <code>$wnd.onCarPickerSubmit()
+	 * </code>, if it exists.
+	 */
+	private native void fireOnFormSubmit() /*-{
+		if ( $wnd.onCarPickerSubmit ) {
+			$wnd.onCarPickerSubmit();
+		}
+	}-*/;
 
 	/**
 	 * Gets the configuration name defined in the global JavaScript variable
@@ -322,6 +332,7 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 			@Override
 			public void onSubmit(SubmitEvent event) {
 				generateFormData();
+				fireOnFormSubmit();
 			}
 		});
 	}

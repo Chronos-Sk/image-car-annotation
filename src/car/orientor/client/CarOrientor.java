@@ -221,6 +221,16 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	}-*/;
 
 	/**
+	 * Calls the native JavaScript function <code>$wnd.onCarOrientorSubmit()
+	 * </code>, if it exists.
+	 */
+	private native void fireOnFormSubmit() /*-{
+		if ( $wnd.onCarOrientorSubmit ) {
+			$wnd.onCarOrientorSubmit();
+		}
+	}-*/;
+
+	/**
 	 * Gets the configuration name defined in the global JavaScript variable
 	 * "carorientor_config", or <code>null</code> if the variable evaluates to
 	 * <code>false</code>.
@@ -552,6 +562,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 			public void onSubmit(SubmitEvent event) {
 				// Turn internal variables into hidden inputs.
 				generateFormData();
+				fireOnFormSubmit();
 			}
 		});
 	}
