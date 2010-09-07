@@ -4,8 +4,12 @@ import gwt.g2d.client.graphics.Surface;
 import gwt.g2d.client.graphics.canvas.CanvasElement;
 import gwt.g2d.client.math.Rectangle;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import car.shared.input.Slider;
 import car.shared.views.Drawable;
@@ -43,9 +47,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SubmitButton;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
 /**
  * Entry point and enclosing <code>Widget</code> for the Car Orientor project.
@@ -96,7 +97,8 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	// Submit form.
 	private FormPanel form;
 	private Panel formContainer;
-	private SubmitButton submit;
+	private Button submit;
+	private Set<Hidden> genHiddens; // Handles to added data fields.
 
 	/**
 	 * Adds a hidden input to the submit form with the specified name and value.
@@ -191,6 +193,9 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		});
 		$wnd.CarOrientor.setFormEnabled = $entry(function(enabled) {
 			_this.@car.orientor.client.CarOrientor::setFormEnabled(Z)(enabled);
+		});
+		$wnd.CarOrientor.resetForm = $entry(function(enabled) {
+			_this.@car.orientor.client.CarOrientor::resetForm()();
 		});
 		$wnd.CarOrientor.setCarRectangle = $entry(function(x,y,w,h) {
 			_this.@car.orientor.client.CarOrientor::setRectangle(DDDD)(x,y,w,h);
@@ -548,7 +553,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		formStyle.setDisplay(Display.INLINE_BLOCK);
 		formStyle.setPaddingLeft(0.5, Unit.EM);
 		
-		submit = new SubmitButton("Submit");
+		submit = new Button("Submit");
 		submit.getElement().setId("carorientor-submit");
 		
 		formContainer = new FlowPanel();
@@ -557,14 +562,88 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 		form.add(formContainer);
 		
 		// Adds hidden tags with data before the form is actually submitted.
-		form.addSubmitHandler(new SubmitHandler() {
+		submit.addClickHandler(new ClickHandler() {
 			@Override
-			public void onSubmit(SubmitEvent event) {
-				// Turn internal variables into hidden inputs.
-				generateFormData();
-				fireOnFormSubmit();
+			public void onClick(ClickEvent event) {
+				if ( shouldSubmitForm() ) {
+					// Turn internal variables into hidden inputs.
+					generateFormData();
+					fireOnFormSubmit();
+					form.submit();
+				}
 			}
 		});
+		
+		genHiddens = new HashSet<Hidden>();
+	}
+	
+	/**
+	 * Resets the form by removing the generated fields and enabling the submit
+	 * button. Removes all of the fields in {@link #genHiddens} from the
+	 * {@linkplain #formContainer form}, clears the set, and calls
+	 * <code>setEnabled(true)</code> on {@link #submit}.
+	 * 
+	 * If this <code>CarOrientor</code> has no form, this method does nothing.
+	 */
+	public void resetForm() {
+		if ( form != null ) { // If we have a form.
+			// Remove all our generated data fields.
+			for ( Hidden hidden : genHiddens ) {
+				formContainer.remove(hidden);
+			}
+			
+			genHiddens.clear();
+			submit.setEnabled(true);
+		}
+	}
+	
+	/**
+	 * Checks to make sure that the form should be submitted. Ensures that the
+	 * car has been translated, rotated, and scaled by the user. Returns
+	 * <code>true</code> if it has. Returns <code>false</code>, otherwise.
+	 * 
+	 * @return whether the form should be submitted.
+	 */
+	private boolean shouldSubmitForm() {
+		ArrayList<String> notDone = new ArrayList<String>();
+		
+		if ( !movableImageView.hasBeenMoved() ) {
+			notDone.add("moved");
+		}
+		if ( !movableImageView.hasBeenScaled() ) {
+			notDone.add("scaled");
+		}
+		if ( !wireFrameView.hasBeenRotated() ) {
+			notDone.add("rotated");
+		}
+
+		if ( notDone.size() == 0 ) {
+			return true; // Everything's been changed.
+		}
+		
+		// Construct confirmation.
+		StringBuilder confirmMsg = new StringBuilder("The car hasn't been ");
+		
+		if ( notDone.size() == 1 ) {
+			confirmMsg.append(notDone.get(0)).append('.');
+		} else if ( notDone.size() == 2 ) {
+			confirmMsg.append(notDone.get(0)).append(" or ");
+			confirmMsg.append(notDone.get(1)).append('.');
+		} else {
+			for ( int i = 0; i < notDone.size() - 1; i++ ) {
+				confirmMsg.append(notDone.get(i)).append(", ");
+			}
+			
+			confirmMsg.append("or ").append(notDone.get(notDone.size()-1));
+			confirmMsg.append(".");
+		}
+		
+		confirmMsg.append("\nCannot submit until the left and right views and" +
+				"the zoom-slider have been changed.");
+		
+		Window.alert(confirmMsg.toString());
+		
+		return false;
 	}
 	
 	/**
@@ -574,20 +653,20 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	 */
 	private void generateFormData() {
 		submit.setEnabled(false);
+		
+		// Generate hidden data fields.
+		
 		// Is there a car?
 		if ( noCarBox.getValue() ) {
-			formContainer.add(new Hidden("car", "false"));
+			genHiddens.add(new Hidden("car", "false"));
 		} else {
-			formContainer.add(new Hidden("car", "true"));
-			formContainer.add(new Hidden(
+			genHiddens.add(new Hidden("car", "true"));
+			genHiddens.add(new Hidden(
 					"carType", "" + wireFrameView.getWireFrame().id));
 			
-			formContainer.add(
-					new Hidden("rotX", "" + wireFrameView.getRotateX()));
-			formContainer.add(
-					new Hidden("rotY", "" + wireFrameView.getRotateY()));
-			formContainer.add(
-					new Hidden("rotZ", "" + wireFrameView.getRotateZ()));
+			genHiddens.add(new Hidden("rotX", "" + wireFrameView.getRotateX()));
+			genHiddens.add(new Hidden("rotY", "" + wireFrameView.getRotateY()));
+			genHiddens.add(new Hidden("rotZ", "" + wireFrameView.getRotateZ()));
 			
 			double zoom = movableImageView.getZoom();
 			
@@ -599,11 +678,15 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 			int posY = (int) movableImageView.getYOffset();
 			posY += wireFrameView.getSurface().getHeight()/zoom / 2;
 			
-			formContainer.add(new Hidden("posX", "" + posX));
-			formContainer.add(new Hidden("posY", "" + posY));
+			genHiddens.add(new Hidden("posX", "" + posX));
+			genHiddens.add(new Hidden("posY", "" + posY));
 			
-			formContainer.add(
-					new Hidden("scale", "" + computeCarScale(zoom)));
+			genHiddens.add(new Hidden("scale", "" + computeCarScale(zoom)));
+		}
+		
+		// Add hidden data fields to form.
+		for ( Hidden hidden : genHiddens ) {
+			formContainer.add(hidden);
 		}
 	}
 	

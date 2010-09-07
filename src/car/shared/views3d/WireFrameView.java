@@ -60,6 +60,9 @@ public class WireFrameView extends FocusPanel implements Drawable {
 	
 	private Surface canvas; // Main canvas to draw on.
 	private DirectShapeRenderer builder; // Allows custom path drawing.
+
+	// Check if user has modified state.
+	private boolean rotated = false;
 	
 	// Color to draw the wire-frame in.
 	private Color lineColor = new Color(0, 0, 0);
@@ -111,6 +114,16 @@ public class WireFrameView extends FocusPanel implements Drawable {
 	}
 	
 	/**
+	 * Returns <code>true</code> if the wire-frame has been rotated from its
+	 * default state, <code>false</code> otherwise.
+	 * 
+	 * @return whether the wire-frame has been rotated.
+	 */
+	public boolean hasBeenRotated() {
+		return rotated;
+	}
+	
+	/**
 	 * Returns the currently drawn wire-frame. This wire-frame will not reflect
 	 * any transformations applied to the view.
 	 * 
@@ -146,6 +159,8 @@ public class WireFrameView extends FocusPanel implements Drawable {
 		rotY = DEFAULT_Y_ROTATION;
 		rotZ = 0;
 		invalidate();
+		
+		rotated = false;
 	}
 
 	/**
@@ -231,6 +246,7 @@ public class WireFrameView extends FocusPanel implements Drawable {
 		}
 
 		invalidate();
+		rotated = true;
 	}
 
 	/**
@@ -253,6 +269,7 @@ public class WireFrameView extends FocusPanel implements Drawable {
 		}
 
 		invalidate();
+		rotated = true;
 	}
 
 	/**
@@ -275,6 +292,7 @@ public class WireFrameView extends FocusPanel implements Drawable {
 		}
 
 		invalidate();
+		rotated = true;
 	}
 	
 	/**
@@ -438,8 +456,8 @@ public class WireFrameView extends FocusPanel implements Drawable {
 		Face[] faces = wireFrame.faces;
 		
 		// Arrays.sort() uses MergeSort, which goes too deep for Safari's
-		// tastes. Furthermore, the faces should be mostly-sorted after the
-		// first run. Insertion sort, FTW.
+		// tastes. Furthermore, the faces should be mostly-sorted each iteration
+		// after the first run. Insertion sort, FTW.
 		insertionZSort(faces); 
 		
 		// Draw each face.
