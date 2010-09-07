@@ -331,6 +331,17 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 		form.addSubmitHandler(new SubmitHandler() {
 			@Override
 			public void onSubmit(SubmitEvent event) {
+				if ( carPointHandler.getCars().isEmpty() ) { // No pickings...
+					boolean submitEmpty = Window.confirm(
+							"No cars have been picked.\n" +
+							"Are you sure you want to submit empty?");
+					
+					if ( !submitEmpty ) {
+						event.cancel(); // Cancel form submission.
+						return;
+					}
+				}
+				
 				generateFormData();
 				fireOnFormSubmit();
 			}

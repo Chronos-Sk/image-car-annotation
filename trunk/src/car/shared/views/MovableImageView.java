@@ -51,6 +51,10 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	private double width;
 	private double height;
 	
+	// Check if user has modified state.
+	boolean moved = false; // Does not count setOffset, only translate.
+	boolean scaled = false;
+	
 	/**
 	 * Creates an instance of <code>MovableImageView</code>
 	 * 
@@ -87,6 +91,28 @@ public class MovableImageView extends FocusPanel implements Drawable {
 		// Because these aren't available before the canvas is attached.
 		this.width  = canvas.getWidth();
 		this.height = canvas.getHeight();
+	}
+
+	/**
+	 * Returns <code>true</code> if the image has been translated from its
+	 * default state, <code>false</code> otherwise. Only takes into account
+	 * {@link #translate(double, double)}. None of the <code>setOffset</code>
+	 * methods will set this flag.
+	 * 
+	 * @return whether the image has been translated.
+	 */
+	public boolean hasBeenMoved() {
+		return moved;
+	}
+	
+	/**
+	 * Returns <code>true</code> if the image has been scaled from its
+	 * default state, <code>false</code> otherwise.
+	 * 
+	 * @return whether the image has been scaled.
+	 */
+	public boolean hasBeenScaled() {
+		return scaled;
 	}
 	
 	/**
@@ -297,6 +323,17 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * @see #getZoomFactor()
 	 */
 	public void setZoomFactor(double t) {
+		setZoomFactorNoFlag(t);
+		scaled = true;
+	}
+	
+	/**
+	 * Same as {@link #setZoomFactor(double)}, but does not alter the scaled
+	 * flag.
+	 * 
+	 * @param t the new zoom factor.
+	 */
+	public void setZoomFactorNoFlag(double t) {
 		setZoom(calcZoom(t));
 	}
 	
@@ -312,6 +349,16 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	 * @see #getZoomFactor()
 	 */
 	public void setZoom(double newZoom) {
+		setZoomNoFlag(newZoom);
+		scaled = true;
+	}
+
+	/**
+	 * Same as {@link #setZoom(double)}, but does not alter the scaled flag.
+	 * 
+	 * @param newZoom the new absolute zoom to apply.
+	 */
+	public void setZoomNoFlag(double newZoom) {
 		// Reset transformation to identity.
 		transform.setM11(newZoom);
 		transform.setM22(newZoom);
@@ -412,6 +459,8 @@ public class MovableImageView extends FocusPanel implements Drawable {
 		} else {
 			setOffset(0, 0);
 		}
+		
+		moved = false;
 	}
 	
 	/**
@@ -423,6 +472,8 @@ public class MovableImageView extends FocusPanel implements Drawable {
 	public void resetZoom() {
 		setZoom(defaultZoom);
 		invalidate();
+		
+		scaled = false;
 	}
 	
 	/**
@@ -491,6 +542,8 @@ public class MovableImageView extends FocusPanel implements Drawable {
 		setOffset(offX + dx/zoom, offY + dy/zoom);
 		
 		invalidate();
+		
+		moved = true;
 	}
 	
 }
