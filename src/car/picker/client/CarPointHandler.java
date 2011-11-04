@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import car.shared.math.Point2D;
+import car.shared.views.Drawable;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
@@ -39,7 +40,8 @@ import com.google.gwt.user.client.ui.Image;
  */
 public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 										MouseMoveHandler, KeyUpHandler,
-										HasSelectionHandlers<CarPoint> {
+										HasSelectionHandlers<CarPoint>,
+										Drawable {
 	
 	private List<CarPoint> carPoints = null; // List of current CarPoints.
 	private Surface canvas = null; // The canvas to draw everything on.
@@ -319,13 +321,16 @@ public class CarPointHandler implements MouseDownHandler, MouseUpHandler,
 	 * itself onto the canvas.
 	 * 
 	 * Always ends up redrawing this <code>CarPointHandler</code>.
+	 * @return 
 	 */
-	public void draw() {
+	public boolean draw() {
 		canvas.drawImage(ImageElement.as(background.getElement()), 0, 0);
 		
 		for ( CarPoint carPoint : carPoints ) {
 			carPoint.draw(canvas);
 		}
+		
+		return true;
 	}
 	
 	/**

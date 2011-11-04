@@ -93,8 +93,8 @@ public class CarPicker extends FocusPanel implements EntryPoint {
 		$wnd.CarPicker.addFormEntry = $entry(function(name, value) {
 			_this.@car.picker.client.CarPicker::addFormEntry(Ljava/lang/String;Ljava/lang/String;)(name,value);
 		});
-		$wnd.CarPicker.setFormEnabled = $entry(function(name, value) {
-			_this.@car.picker.client.CarPicker::setFormEnabled(Z)(name,value);
+		$wnd.CarPicker.setFormEnabled = $entry(function(value) {
+			_this.@car.picker.client.CarPicker::setFormEnabled(Z)(value);
 		});
 		$wnd.CarPicker.setMaxCars = $entry(function(max) {
 			_this.@car.picker.client.CarPicker::carPointHandler.@car.picker.client.CarPointHandler::setMaxCars(I)(max);
