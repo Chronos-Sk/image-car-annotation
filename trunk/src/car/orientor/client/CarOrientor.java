@@ -79,9 +79,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 	private MovableImageView movableImageView = null;
 	
 	// Classes responsible for handling mouse events on the views.
-	@SuppressWarnings("unused")
 	private WireFrameMouseHandler wfmh;
-	@SuppressWarnings("unused")
 	private MovableImageMouseHandler mimh;
 	
 	// Input controls.
@@ -768,7 +766,7 @@ public class CarOrientor extends FocusPanel implements EntryPoint, Drawable {
 			}
 			
 			// If it was redrawn and we're displaying the wire-frame...
-			if ( movableImageRedrawn && !noCarBox.getValue() ) {
+			if ( movableImageRedrawn && (noCarBox == null || !noCarBox.getValue()) ) {
 				// Redraw wire-frame ontop of it.
 				drawWireFrameOn(movableImageView.getSurface());
 			}

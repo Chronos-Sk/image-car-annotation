@@ -13,6 +13,7 @@ import car.shared.views.Drawable;
 import car.shared.views3d.obj.Face;
 import car.shared.views3d.obj.ObjWireFrame;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FocusPanel;
 
 /**
@@ -467,8 +468,8 @@ public class WireFrameView extends FocusPanel implements Drawable {
 			
 			// If face has no normal, or normal is in the direction of view.
 			if ( normal == -1 || tNormals[normal].dot(view) >= 0 ) {
-				//Draw it.
 				
+				//Draw it.
 				builder.beginPath();
 				
 				builder.moveTo(vPoints[vertices[0]]); // Move to first point.
@@ -483,8 +484,13 @@ public class WireFrameView extends FocusPanel implements Drawable {
 				builder.closePath();
 				// Fill with transparent black.
 				// Occludes lines in the back due to z-sorting.
-				builder.fill(); 
+				// We need to clip since Firefox and Chrome decided that fill
+				// should fill the entire canvas.
+				canvas.save();
+				builder.clip();
+				builder.fill();
 				builder.stroke(); // Stroke lines.
+				canvas.restore();
 			}
 		}
 	}
